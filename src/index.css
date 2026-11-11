@@ -1,3 +1,16 @@
+@import "./assets/fonts/pretendard/pretendard.css";
+@import "./styles/typography.css";
+
+:root {
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --bottom-action-gap: 54px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -19,9 +32,39 @@ body {
   min-width: 320px;
   min-height: 100dvh;
 
-  background-color: #ffffff;
-  font-family: Pretendard, sans-serif;
+  background-color: #fafafa;
+  font-family: "Pretendard Variable", sans-serif;
   color: #000000;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+@media (min-width: 403px) {
+  body {
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(217, 247, 104, 0.24), rgba(217, 247, 104, 0) 70%),
+      radial-gradient(ellipse 60% 45% at 50% 100%, rgba(217, 247, 104, 0.13), rgba(217, 247, 104, 0) 70%), #fbfcf8;
+    background-attachment: fixed;
+  }
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-touch-callout: default;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+img {
+  -webkit-user-drag: none;
 }
 
 button,
@@ -33,6 +76,23 @@ select {
 
 button {
   cursor: pointer;
+
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+button:not(:disabled):active {
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
 }
 
 a {

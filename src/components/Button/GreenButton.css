@@ -17,15 +17,34 @@
   font-size: 15px;
   font-weight: 700;
   text-align: left;
+
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.green-button:not(:disabled):active {
+  opacity: 1;
+  transform: scale(0.98);
 }
 
 .green-button__icon {
   width: 20px;
   height: 20px;
   object-fit: contain;
+
+  transition: transform var(--duration-slow) var(--ease-spring);
 }
 
 .green-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.green-button:disabled .green-button__icon {
+  transform: translateX(-6px);
+}
+
+.green-button:not(:disabled):active .green-button__icon {
+  transform: translateX(4px);
 }

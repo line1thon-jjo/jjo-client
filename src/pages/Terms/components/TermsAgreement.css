@@ -1,0 +1,47 @@
+.terms-agreement {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.terms-agreement__divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 0;
+  border: none;
+
+  background-color: #ececec;
+}
+
+.terms-agreement__list {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.terms-agreement__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.terms-agreement__detail {
+  display: flex;
+
+  margin: -6px;
+  padding: 6px;
+  border: none;
+
+  background: none;
+}

@@ -1,0 +1,22 @@
+.terms-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.terms-content__heading {
+  margin: 0 0 8px;
+
+  color: #343434;
+}
+
+.terms-content__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin: 0;
+  padding-left: 18px;
+
+  color: #515151;
+}
