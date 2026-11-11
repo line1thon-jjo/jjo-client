@@ -1,8 +1,7 @@
-// Mock of jjo-server /auth. Responses mirror the real API so only these bodies change later.
+import { wait } from "./mock";
 
 const DB_KEY = "jjo:mock-auth";
 const TOKEN_KEY = "jjo:access-token";
-const LATENCY = 400;
 
 const MOCK_USER = {
   id: 1,
@@ -17,10 +16,6 @@ export class AuthError extends Error {
     this.status = status;
     this.code = code;
   }
-}
-
-function wait() {
-  return new Promise((resolve) => setTimeout(resolve, LATENCY));
 }
 
 function read(key) {
