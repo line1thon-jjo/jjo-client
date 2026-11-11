@@ -64,6 +64,10 @@ export default function HomePage() {
     navigate("/script");
   };
 
+  const handleOpenPractice = () => {
+    navigate("/reports/mock");
+  };
+
   return (
     <div className="home-page">
       <Header />
@@ -77,6 +81,7 @@ export default function HomePage() {
                 title={practice.title}
                 content={practice.content}
                 time={practice.time}
+                onClick={handleOpenPractice}
               />
             ))}
           </div>
@@ -88,6 +93,7 @@ export default function HomePage() {
                 title={practice.title}
                 content={practice.content}
                 time={practice.time}
+                onClick={handleOpenPractice}
               />
             ))}
           </div>

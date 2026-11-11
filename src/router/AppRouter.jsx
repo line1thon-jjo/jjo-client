@@ -15,6 +15,7 @@ import ScriptPage from "../pages/Script/page/ScriptPage";
 import LoginPage from "../pages/Login/page/LoginPage";
 import TermsPage from "../pages/Terms/page/TermsPage";
 import OnboardingPage from "../pages/Onboarding/page/OnboardingPage";
+import ReportPage from "../pages/Report/page/ReportPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function AppRouter() {
               <Route element={<RequireOnboarded />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/script" element={<ScriptRoute />} />
+                <Route path="/reports/:recordingId" element={<ReportPage />} />
               </Route>
             </Route>
 
