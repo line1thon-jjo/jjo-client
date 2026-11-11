@@ -28,6 +28,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 body {
   min-width: 320px;
   min-height: 100dvh;
@@ -38,7 +42,6 @@ body {
   word-break: keep-all;
   overflow-wrap: anywhere;
 
-  overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
