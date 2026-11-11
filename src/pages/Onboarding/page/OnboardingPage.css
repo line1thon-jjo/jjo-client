@@ -55,7 +55,7 @@
   bottom: 0;
 
   width: 100%;
-  padding: 16px 20px calc(54px + env(safe-area-inset-bottom));
+  padding: 16px 20px calc(var(--bottom-action-gap) + env(safe-area-inset-bottom));
 
   background-color: #fafafa;
 }
