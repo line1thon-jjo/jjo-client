@@ -35,6 +35,8 @@ body {
   background-color: #fafafa;
   font-family: "Pretendard Variable", sans-serif;
   color: #000000;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
