@@ -1,0 +1,82 @@
+.agreement-checkbox {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #343434;
+
+  cursor: pointer;
+}
+
+.agreement-checkbox__input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  margin: 0;
+  opacity: 0;
+}
+
+.agreement-checkbox__box {
+  position: relative;
+
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #ffffff;
+
+  transition:
+    background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.agreement-checkbox:active .agreement-checkbox__box {
+  transform: scale(0.88);
+}
+
+.agreement-checkbox__input:checked + .agreement-checkbox__box {
+  background-color: #000000;
+  border-color: #000000;
+
+  animation: agreement-checkbox-pop var(--duration-slow) var(--ease-spring);
+}
+
+.agreement-checkbox__input:focus-visible + .agreement-checkbox__box {
+  outline: 2px solid #09090b;
+  outline-offset: 2px;
+}
+
+.agreement-checkbox__check {
+  position: absolute;
+  inset: -1px;
+}
+
+.agreement-checkbox__check path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+
+  transition: stroke-dashoffset var(--duration-fast) var(--ease-standard);
+}
+
+.agreement-checkbox__input:checked + .agreement-checkbox__box .agreement-checkbox__check path {
+  stroke-dashoffset: 0;
+
+  transition: stroke-dashoffset var(--duration-base) var(--ease-standard) 80ms;
+}
+
+@keyframes agreement-checkbox-pop {
+  0% {
+    transform: scale(0.88);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

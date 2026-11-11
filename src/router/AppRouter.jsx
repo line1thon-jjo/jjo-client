@@ -7,6 +7,7 @@ import {
 
 import HomePage from "../pages/Home/page/HomePage";
 import ScriptPage from "../pages/Script/page/ScriptPage";
+import OnboardingPage from "../pages/Onboarding/page/OnboardingPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/script" element={<ScriptRoute />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>

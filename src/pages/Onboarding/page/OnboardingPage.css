@@ -1,0 +1,61 @@
+.onboarding-page {
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fafafa;
+  overflow-x: clip;
+}
+
+.onboarding-page__main {
+  width: 100%;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: clamp(104px, 30dvh, 276px) 20px 40px;
+}
+
+.onboarding-page__brand {
+  position: relative;
+
+  height: 88px;
+  margin-right: -20px;
+}
+
+.onboarding-page__logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.onboarding-page__accent {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  left: 80px;
+
+  height: 23px;
+
+  background-color: #d9f768;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.onboarding-page__title {
+  margin: 31px 0 64px;
+
+  color: #09090b;
+}
+
+.onboarding-page__bottom {
+  position: sticky;
+  bottom: 0;
+
+  width: 100%;
+  padding: 16px 20px calc(54px + env(safe-area-inset-bottom));
+
+  background-color: #fafafa;
+}
