@@ -1,0 +1,125 @@
+.onboarding-demo {
+  position: relative;
+
+  margin: 0;
+
+  color: #09090b;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.onboarding-demo p {
+  margin: 0;
+}
+
+/* 1. 길게 늘인 음절은 가로로 늘어난다 */
+
+.onboarding-demo--intonation {
+  display: flex;
+  gap: 0.3em;
+}
+
+.onboarding-demo__word {
+  display: inline-flex;
+
+  padding-right: 0.9em;
+}
+
+.onboarding-demo__stretch {
+  display: inline-block;
+
+  transform-origin: left center;
+}
+
+/* 2. 쉰 위치는 간격, 빠른 구절은 밑줄 */
+
+.onboarding-demo--breath {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.onboarding-demo__fast-line {
+  position: relative;
+
+  display: flex;
+  align-items: flex-end;
+
+  padding-bottom: 5px;
+}
+
+.onboarding-demo__underline {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  height: 2px;
+
+  background-color: #ae3f41;
+  transform-origin: left center;
+}
+
+.onboarding-demo__pause {
+  position: relative;
+
+  height: 1.3em;
+
+  overflow: hidden;
+}
+
+.onboarding-demo__pause::after {
+  content: "";
+
+  position: absolute;
+  right: 4px;
+  bottom: 0.62em;
+  left: 4px;
+
+  border-top: 2px dotted #09090b;
+}
+
+.onboarding-demo__pause-label {
+  position: absolute;
+  top: 0.15em;
+  left: 50%;
+
+  color: #515151;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  transform: translateX(-50%);
+}
+
+/* 3. 이전과 지금 비교 */
+
+.onboarding-demo--retry {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.onboarding-demo__row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.onboarding-demo__row dt {
+  color: #515151;
+  font-size: 15px;
+}
+
+.onboarding-demo__row dd {
+  margin: 0;
+}
+
+.onboarding-demo__row--now dd {
+  font-weight: 700;
+}

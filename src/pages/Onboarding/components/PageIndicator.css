@@ -1,0 +1,27 @@
+.page-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.page-indicator__dot {
+  width: 20px;
+  height: 6px;
+
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+
+  background-color: #b8b8b8;
+
+  transition:
+    width var(--duration-slow) var(--ease-standard),
+    background-color var(--duration-slow) var(--ease-standard);
+}
+
+.page-indicator__dot[data-active="true"] {
+  width: 40px;
+
+  background-color: #09090b;
+}

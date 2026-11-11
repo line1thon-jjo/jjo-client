@@ -1,0 +1,121 @@
+.brand-layout {
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fafafa;
+  overflow-x: clip;
+}
+
+.brand-layout__main {
+  width: 100%;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: clamp(104px, 30dvh, 276px) 20px 40px;
+}
+
+.brand-layout__brand {
+  position: relative;
+
+  height: 88px;
+  margin-right: -20px;
+}
+
+.brand-layout__logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.brand-layout__accent {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  left: 80px;
+
+  height: 23px;
+
+  background-color: #d9f768;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.brand-layout__title {
+  margin: 31px 0 64px;
+
+  color: #09090b;
+}
+
+.brand-layout__bottom {
+  position: sticky;
+  bottom: 0;
+
+  width: 100%;
+  padding: 16px 20px calc(var(--bottom-action-gap) + env(safe-area-inset-bottom));
+
+  background-color: #fafafa;
+}
+
+/*
+ * Intro: the logo starts at the screen center, then the accent bar grows from the right
+ * and pushes it to its resting place. The brand box starts 20px from the screen edge and
+ * bleeds 20px past the right edge, so the screen center is at 50% - 10px of the box.
+ */
+
+.brand-layout[data-intro="true"] .brand-layout__logo {
+  animation: brand-layout-logo-in 760ms var(--ease-standard) 240ms both;
+}
+
+.brand-layout[data-intro="true"] .brand-layout__accent {
+  animation: brand-layout-accent-in 760ms var(--ease-standard) 240ms both;
+}
+
+.brand-layout[data-intro="true"] .brand-layout__title,
+.brand-layout[data-intro="true"] .brand-layout__content,
+.brand-layout[data-intro="true"] .brand-layout__bottom {
+  animation: brand-layout-fade-up var(--duration-slow) var(--ease-standard) both;
+}
+
+.brand-layout[data-intro="true"] .brand-layout__title {
+  animation-delay: 840ms;
+}
+
+.brand-layout[data-intro="true"] .brand-layout__content {
+  animation-delay: 920ms;
+}
+
+.brand-layout[data-intro="true"] .brand-layout__bottom {
+  animation-delay: 1000ms;
+}
+
+@keyframes brand-layout-logo-in {
+  from,
+  30% {
+    left: calc(50% - 49px);
+  }
+}
+
+@keyframes brand-layout-accent-in {
+  from {
+    left: calc(100% + 14px);
+  }
+
+  30% {
+    left: calc(50% + 31px);
+  }
+
+  to {
+    left: 80px;
+  }
+}
+
+@keyframes brand-layout-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
