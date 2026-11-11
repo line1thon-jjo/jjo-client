@@ -1,4 +1,5 @@
 @import "./assets/fonts/pretendard/pretendard.css";
+@import "./styles/typography.css";
 
 * {
   box-sizing: border-box;
