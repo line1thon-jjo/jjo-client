@@ -1,3 +1,3 @@
-# jjo-client
+# React + Vite
 
-Frontend client for jjo, an AI presentation coach that detects speaking habits from your recordings
+Frontend client for jjo
