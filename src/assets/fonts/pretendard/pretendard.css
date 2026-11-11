@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "Pretendard Variable";
+  font-style: normal;
+  font-weight: 45 920;
+  font-display: swap;
+  src:
+    url("./PretendardVariable.woff2") format("woff2-variations"),
+    url("./PretendardVariable.woff2") format("woff2");
+}
