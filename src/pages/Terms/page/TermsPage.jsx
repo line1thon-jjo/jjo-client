@@ -9,9 +9,9 @@ import { TERMS } from "../data/terms";
 
 import logo from "../../../assets/images/jjo-logo-large.svg";
 
-import "./OnboardingPage.css";
+import "./TermsPage.css";
 
-export default function OnboardingPage() {
+export default function TermsPage() {
   const navigate = useNavigate();
   const [agreements, setAgreements] = useState({});
   const [sheetTermId, setSheetTermId] = useState(null);
