@@ -1,0 +1,16 @@
+.terms-page__agreement {
+  animation: terms-page-reveal var(--duration-slow) var(--ease-standard) both;
+}
+
+.terms-page__error {
+  margin: 24px 0 0;
+
+  color: #d93b3b;
+}
+
+@keyframes terms-page-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

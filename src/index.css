@@ -35,6 +35,8 @@ body {
   background-color: #fafafa;
   font-family: "Pretendard Variable", sans-serif;
   color: #000000;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
@@ -47,8 +49,8 @@ body {
 @media (min-width: 403px) {
   body {
     background:
-      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(217, 247, 104, 0.55), transparent 70%),
-      radial-gradient(ellipse 60% 45% at 50% 100%, rgba(217, 247, 104, 0.3), transparent 70%), #f2f3ef;
+      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(217, 247, 104, 0.24), rgba(217, 247, 104, 0) 70%),
+      radial-gradient(ellipse 60% 45% at 50% 100%, rgba(217, 247, 104, 0.13), rgba(217, 247, 104, 0) 70%), #fbfcf8;
     background-attachment: fixed;
   }
 }
