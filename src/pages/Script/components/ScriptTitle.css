@@ -1,0 +1,47 @@
+.script-title {
+  width: 100%;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  border-bottom: 1px solid #767676;
+}
+
+.script-title__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  font-size: 18px;
+  font-weight: 700;
+  color: #515151;
+}
+
+.script-title__input::placeholder {
+  color: #515151;
+  opacity: 1;
+}
+
+.script-title__edit {
+  width: 25px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.script-title__edit img {
+  width: 16px;
+  height: 16px;
+}
