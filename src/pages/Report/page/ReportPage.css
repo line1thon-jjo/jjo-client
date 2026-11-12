@@ -11,9 +11,24 @@
 .report-page__intro {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 
-  padding: 20px 20px 16px;
+  padding: 20px 20px 8px;
+}
+
+.report-page__attempts {
+  min-height: 38px;
+}
+
+.report-page__meta {
+  min-height: 1.3em;
+
+  display: flex;
+  gap: 6px;
+
+  margin: -6px 0 0;
+
+  color: #7a7a82;
 }
 
 .report-page__title {
@@ -26,7 +41,7 @@
   display: flex;
   gap: 6px;
 
-  margin: 0;
+  margin: 0 0 12px;
   padding: 8px 12px;
   border-radius: 8px;
 

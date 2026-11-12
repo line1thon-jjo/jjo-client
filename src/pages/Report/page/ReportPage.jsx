@@ -5,13 +5,13 @@ import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import GreenButton from "@/components/Button/GreenButton";
 import Header from "@/components/Header/Header";
 import AnalyzingScreen from "@/pages/Report/components/AnalyzingScreen";
-import AttemptSelector from "@/pages/Report/components/AttemptSelector";
+import AttemptTabs from "@/pages/Report/components/AttemptTabs";
 import FeedbackList from "@/pages/Report/components/FeedbackList";
 import OverviewPanel from "@/pages/Report/components/OverviewPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
-import { findPreviousAttempt } from "@/pages/Report/lib/attempts";
+import { findPreviousAttempt, formatDuration, formatRecordedAt } from "@/pages/Report/lib/attempts";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
 import { getAttempts, getFeedback, getOverview, getUtterance } from "@/api/reports";
 import { REPORT_IN_PROGRESS, REPORT_TABS, REPORT_WARNINGS } from "@/constants/report";
@@ -20,46 +20,108 @@ import infoIcon from "@/assets/icons/info-icon.svg";
 
 import "./ReportPage.css";
 
-const EMPTY_RESULT = {
-  attempts: [],
-  overview: null,
-  utterance: null,
-  feedback: null,
-  previous: null,
-  error: null,
-};
+const EMPTY_RESULT = { overview: null, utterance: null, feedback: null, previous: null, error: null };
 
 export default function ReportPage() {
   const { practiceId, recordingId } = useParams();
-  return <Report key={recordingId} practiceId={practiceId} recordingId={recordingId} />;
+  return <PracticeReport key={practiceId} practiceId={practiceId} recordingId={recordingId} />;
 }
 
-async function loadResult(practiceId, recordingId, attemptNo, signal) {
-  const { attempts } = await getAttempts(practiceId, { signal }).catch((error) => {
-    if (error.name === "AbortError") throw error;
-    return { attempts: [] };
-  });
-  const previousAttempt = findPreviousAttempt(attempts, attemptNo);
+function PracticeReport({ practiceId, recordingId }) {
+  const navigate = useNavigate();
+  const [attempts, setAttempts] = useState(null);
+  const [current, setCurrent] = useState(null);
+  const [tab, setTab] = useState(REPORT_TABS[0].id);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    getAttempts(practiceId, { signal: controller.signal })
+      .then((response) => setAttempts(response.attempts))
+      .catch(() => {
+        if (!controller.signal.aborted) setAttempts([]);
+      });
+
+    return () => controller.abort();
+  }, [practiceId]);
+
+  const handleReport = useCallback((report) => {
+    setCurrent(report);
+    setAttempts((list) =>
+      list?.map((attempt) =>
+        attempt.recording_id === report.recording_id ? { ...attempt, status: report.status } : attempt,
+      ),
+    );
+  }, []);
+
+  const handleBack = () => navigate("/");
+  const handleSelect = (id) => navigate(`/practices/${practiceId}/reports/${id}`, { replace: true });
+
+  const currentAttempt = attempts?.find((attempt) => String(attempt.recording_id) === String(recordingId));
+  const currentReport = String(current?.recording_id) === String(recordingId) ? current : null;
+  const recordedAt = currentReport?.recorded_at ?? currentAttempt?.recorded_at;
+
+  const chrome = (
+    <>
+      <Header variant="back" onBack={handleBack} />
+      <section className="report-page__intro">
+        {current ? (
+          <h1 className="report-page__title font-22-bold">{current.practice_title}</h1>
+        ) : (
+          <span className="report-page__skeleton report-page__title font-22-bold" style={{ width: "64%" }} />
+        )}
+
+        <div className="report-page__attempts">
+          {attempts && attempts.length > 0 && (
+            <AttemptTabs attempts={attempts} currentId={recordingId} onSelect={handleSelect} />
+          )}
+        </div>
+
+        <p className="report-page__meta font-13-regular">
+          {recordedAt && formatRecordedAt(recordedAt)}
+          {currentReport && (
+            <>
+              <span aria-hidden="true">·</span>
+              {formatDuration(currentReport.duration_ms)}
+            </>
+          )}
+        </p>
+      </section>
+    </>
+  );
+
+  return (
+    <Report
+      key={recordingId}
+      recordingId={recordingId}
+      attempts={attempts}
+      chrome={chrome}
+      tab={tab}
+      onTabChange={setTab}
+      onReport={handleReport}
+      onBack={handleBack}
+    />
+  );
+}
+
+async function loadResult(recordingId, previousId, previousNo, signal) {
   const [overview, utterance, feedback, previousOverview] = await Promise.all([
     getOverview(recordingId, { signal }),
     getUtterance(recordingId, { signal }),
     getFeedback(recordingId, { signal }),
-    previousAttempt ? getOverview(previousAttempt.recording_id, { signal }).catch(() => null) : null,
+    previousId ? getOverview(previousId, { signal }).catch(() => null) : null,
   ]);
 
   return {
-    attempts,
     overview,
     utterance,
     feedback,
-    previous: previousOverview && { attemptNo: previousAttempt.attempt_no, overview: previousOverview },
+    previous: previousOverview && { attemptNo: previousNo, overview: previousOverview },
     error: null,
   };
 }
 
-function Report({ practiceId, recordingId }) {
-  const navigate = useNavigate();
+function Report({ recordingId, attempts, chrome, tab, onTabChange, onReport, onBack }) {
   const { report, error: statusError, sawProgress, retry: retryStatus } = useReportStatus(recordingId);
   const [result, setResult] = useState(EMPTY_RESULT);
   const [resultRequest, setResultRequest] = useState(0);
@@ -67,24 +129,29 @@ function Report({ practiceId, recordingId }) {
 
   const isCompleted = report?.status === "COMPLETED";
   const isInProgress = REPORT_IN_PROGRESS.includes(report?.status);
-  const attemptNo = report?.attempt_no;
+  const previousAttempt = attempts && report ? findPreviousAttempt(attempts, report.attempt_no) : null;
+  const previousId = previousAttempt?.recording_id ?? null;
+  const previousNo = previousAttempt?.attempt_no ?? null;
+  const canLoad = isCompleted && attempts !== null;
 
   useEffect(() => {
-    if (!isCompleted) return;
+    if (report) onReport(report);
+  }, [report, onReport]);
+
+  useEffect(() => {
+    if (!canLoad) return;
     const controller = new AbortController();
 
-    loadResult(practiceId, recordingId, attemptNo, controller.signal)
+    loadResult(recordingId, previousId, previousNo, controller.signal)
       .then((loaded) => setResult(loaded))
       .catch((error) => {
         if (!controller.signal.aborted) setResult({ ...EMPTY_RESULT, error });
       });
 
     return () => controller.abort();
-  }, [practiceId, recordingId, attemptNo, isCompleted, resultRequest]);
+  }, [recordingId, previousId, previousNo, canLoad, resultRequest]);
 
-  const handleBack = () => navigate("/");
   const handleCelebrated = useCallback(() => setHasCelebrated(true), []);
-  const handleSelectAttempt = (nextRecordingId) => navigate(`/practices/${practiceId}/reports/${nextRecordingId}`);
 
   const handleRetryResult = () => {
     setResult(EMPTY_RESULT);
@@ -95,11 +162,11 @@ function Report({ practiceId, recordingId }) {
   if (error) {
     return (
       <ReportNotice
+        chrome={chrome}
         title="결과를 불러오지 못했어요."
         description={getErrorMessage(error)}
         action="다시 불러오기"
         onAction={statusError ? retryStatus : handleRetryResult}
-        onBack={handleBack}
       />
     );
   }
@@ -107,26 +174,26 @@ function Report({ practiceId, recordingId }) {
   if (report?.status === "FAILED") {
     return (
       <ReportNotice
+        chrome={chrome}
         title="분석하지 못했어요."
         description={getFailureMessage(report.failure)}
         action="다시 분석하기"
         onAction={retryStatus}
-        onBack={handleBack}
       />
     );
   }
 
   if (isInProgress || (isCompleted && sawProgress && !hasCelebrated)) {
-    return <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={handleBack} />;
+    return <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />;
   }
 
-  return <ReportResult report={report} result={result} onSelectAttempt={handleSelectAttempt} onBack={handleBack} />;
+  return <ReportResult chrome={chrome} report={report} result={result} tab={tab} onTabChange={onTabChange} />;
 }
 
-function ReportNotice({ title, description, action, onAction, onBack }) {
+function ReportNotice({ chrome, title, description, action, onAction }) {
   return (
     <div className="report-page">
-      <Header variant="back" onBack={onBack} />
+      {chrome}
       <div className="report-page__notice" role="alert">
         <p className="font-18-semibold">{title}</p>
         <p className="font-14-regular">{description}</p>
@@ -138,11 +205,10 @@ function ReportNotice({ title, description, action, onAction, onBack }) {
   );
 }
 
-function ReportResult({ report, result, onSelectAttempt, onBack }) {
-  const [tab, setTab] = useState(REPORT_TABS[0].id);
+function ReportResult({ chrome, report, result, tab, onTabChange: setTab }) {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-  const { attempts, overview, utterance, feedback, previous } = result;
+  const { overview, utterance, feedback, previous } = result;
   const isReady = Boolean(overview);
   const feedbackCount = feedback?.items.length ?? 0;
   const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
@@ -158,23 +224,7 @@ function ReportResult({ report, result, onSelectAttempt, onBack }) {
 
   return (
     <div className="report-page" aria-busy={!isReady}>
-      <Header variant="back" onBack={onBack} />
-
-      <section className="report-page__intro">
-        {report ? (
-          <h1 className="report-page__title font-22-bold">{report.practice_title}</h1>
-        ) : (
-          <span className="report-page__skeleton font-22-bold" style={{ width: "64%" }} />
-        )}
-
-        {warnings.map((code) => (
-          <p key={code} className="report-page__warning font-13-regular line-height-150">
-            {REPORT_WARNINGS[code]}
-          </p>
-        ))}
-      </section>
-
-      {report && <AttemptSelector report={report} attempts={attempts} onSelect={onSelectAttempt} />}
+      {chrome}
 
       <section className="report-page__summary">
         {isReady ? (
@@ -251,6 +301,11 @@ function ReportResult({ report, result, onSelectAttempt, onBack }) {
         >
           {utterance ? (
             <>
+              {warnings.map((code) => (
+                <p key={code} className="report-page__warning font-13-regular line-height-150">
+                  {REPORT_WARNINGS[code]}
+                </p>
+              ))}
               <div className="report-page__toolbar">
                 <button type="button" className="report-page__info font-13-medium" onClick={() => setIsGuideOpen(true)}>
                   <img src={infoIcon} alt="" />
