@@ -4,6 +4,7 @@ export const ERROR_MESSAGES = {
   NETWORK_ERROR: "인터넷 연결을 확인해 주세요.",
   ACCESS_CREDENTIAL_INVALID: "로그인이 만료됐어요. 다시 로그인해 주세요.",
   GOOGLE_CREDENTIAL_INVALID: "구글 로그인에 실패했어요. 다시 시도해 주세요.",
+  GOOGLE_IDENTITY_UNAVAILABLE: "구글 로그인을 불러오지 못했어요. 새로고침해 주세요.",
   GOOGLE_VERIFICATION_UNAVAILABLE: "구글에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.",
   SIGNUP_CREDENTIAL_INVALID: "가입 시간이 지났어요. 다시 로그인해 주세요.",
   SIGNUP_ALREADY_COMPLETED: "이미 가입한 계정이에요. 다시 로그인해 주세요.",
