@@ -68,9 +68,15 @@ export default function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const withdraw = useCallback(async () => {
+    await authApi.withdraw();
+    setSignupToken(null);
+    setUser(null);
+  }, []);
+
   const value = useMemo(
-    () => ({ isLoading, user, signupToken, login, signup, completeOnboarding, logout }),
-    [isLoading, user, signupToken, login, signup, completeOnboarding, logout],
+    () => ({ isLoading, user, signupToken, login, signup, completeOnboarding, logout, withdraw }),
+    [isLoading, user, signupToken, login, signup, completeOnboarding, logout, withdraw],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

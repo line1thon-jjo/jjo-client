@@ -1,7 +1,10 @@
+import { useState } from "react";
+
+import MenuPanel from "@/components/MenuPanel/MenuPanel";
+
 import "./Header.css";
 
 import logo from "../../assets/images/jjo-logo.svg";
-import menuIcon from "../../assets/icons/menu-icon.svg";
 import arrowLeft from "../../assets/icons/arrow-left.svg";
 
 export default function Header({
@@ -9,6 +12,8 @@ export default function Header({
   onBack,
   onMenuClick,
 }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const isBack = variant === "back";
 
   return (
@@ -37,15 +42,20 @@ export default function Header({
       <button
         type="button"
         className="header__button"
-        onClick={onMenuClick}
-        aria-label="메뉴 열기"
+        onClick={onMenuClick ?? (() => setIsMenuOpen((open) => !open))}
+        aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+        aria-expanded={isMenuOpen}
+        data-open={isMenuOpen || undefined}
+        data-leaving={isLeaving || undefined}
       >
-        <img
-          src={menuIcon}
-          alt=""
-          className="header__icon"
-        />
+        <span className="header__burger" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
+
+      <MenuPanel open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onLeave={() => setIsLeaving(true)} />
     </header>
   );
 }
