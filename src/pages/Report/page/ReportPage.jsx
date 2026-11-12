@@ -6,16 +6,16 @@ import GreenButton from "@/components/Button/GreenButton";
 import Header from "@/components/Header/Header";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
-import { getOverview, getUtterance } from "@/api/reports";
+import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
+import { getErrorMessage, getFailureMessage } from "@/api/messages";
+import { getFeedback, getOverview, getUtterance } from "@/api/reports";
+import { REPORT_TABS } from "@/constants/report";
 
 import infoIcon from "@/assets/icons/info-icon.svg";
 
 import "./ReportPage.css";
 
-const TABS = [
-  { id: "utterance", label: "발화 분석" },
-  { id: "feedback", label: "AI 피드백" },
-];
+const EMPTY_RESULT = { overview: null, utterance: null, feedback: null, error: null };
 
 export default function ReportPage() {
   const { recordingId } = useParams();
@@ -24,69 +24,128 @@ export default function ReportPage() {
 
 function Report({ recordingId }) {
   const navigate = useNavigate();
-  const [report, setReport] = useState({ status: "loading", overview: null, utterance: null });
-  const [attempt, setAttempt] = useState(0);
+  const { report, error: statusError, retry: retryStatus } = useReportStatus(recordingId);
+  const [result, setResult] = useState(EMPTY_RESULT);
+  const [resultRequest, setResultRequest] = useState(0);
+
+  const isCompleted = report?.status === "COMPLETED";
+
+  useEffect(() => {
+    if (!isCompleted) return;
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    Promise.all([
+      getOverview(recordingId, { signal }),
+      getUtterance(recordingId, { signal }),
+      getFeedback(recordingId, { signal }),
+    ])
+      .then(([overview, utterance, feedback]) => {
+        if (!signal.aborted) setResult({ overview, utterance, feedback, error: null });
+      })
+      .catch((error) => {
+        if (!signal.aborted) setResult({ ...EMPTY_RESULT, error });
+      });
+
+    return () => controller.abort();
+  }, [recordingId, isCompleted, resultRequest]);
+
+  const handleBack = () => navigate("/");
+
+  const handleRetryResult = () => {
+    setResult(EMPTY_RESULT);
+    setResultRequest((count) => count + 1);
+  };
+
+  const error = statusError ?? result.error;
+  if (error) {
+    return (
+      <ReportNotice
+        title="결과를 불러오지 못했어요."
+        description={getErrorMessage(error)}
+        action="다시 불러오기"
+        onAction={statusError ? retryStatus : handleRetryResult}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  if (report?.status === "FAILED") {
+    return (
+      <ReportNotice
+        title="분석하지 못했어요."
+        description={getFailureMessage(report.failure)}
+        action="다시 분석하기"
+        onAction={retryStatus}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  if (report && !isCompleted) {
+    return (
+      <ReportNotice
+        title="녹음을 분석하고 있어요."
+        description="1분 녹음 기준 20~30초 정도 걸려요."
+        isBusy
+        onBack={handleBack}
+      />
+    );
+  }
+
+  return <ReportResult result={result} onBack={handleBack} />;
+}
+
+function ReportNotice({ title, description, action, onAction, isBusy = false, onBack }) {
+  return (
+    <div className="report-page">
+      <Header variant="back" onBack={onBack} />
+      <div className="report-page__notice" role={isBusy ? "status" : "alert"} aria-busy={isBusy}>
+        {isBusy && (
+          <span className="report-page__dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+        )}
+        <p className="font-18-semibold">{title}</p>
+        <p className="font-14-regular">{description}</p>
+      </div>
+      {action && (
+        <div className="report-page__bottom">
+          <GreenButton text={action} onClick={onAction} showArrow={false} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReportResult({ result, onBack }) {
   const [tab, setTab] = useState("utterance");
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-  useEffect(() => {
-    let isActive = true;
-
-    Promise.all([getOverview(recordingId), getUtterance(recordingId)])
-      .then(([overview, utterance]) => {
-        if (isActive) setReport({ status: "ready", overview, utterance });
-      })
-      .catch(() => {
-        if (isActive) setReport({ status: "error", overview: null, utterance: null });
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, [recordingId, attempt]);
-
-  const handleRetry = () => {
-    setReport({ status: "loading", overview: null, utterance: null });
-    setAttempt((count) => count + 1);
-  };
+  const { overview, utterance, feedback } = result;
+  const feedbackCount = feedback?.items.length ?? 0;
+  const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
 
   const handleTabKeyDown = (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    const index = TABS.findIndex(({ id }) => id === tab);
-    const next = TABS[(index + (event.key === "ArrowRight" ? 1 : -1) + TABS.length) % TABS.length];
+    const step = event.key === "ArrowRight" ? 1 : -1;
+    const next = REPORT_TABS[(tabIndex + step + REPORT_TABS.length) % REPORT_TABS.length];
     setTab(next.id);
     document.getElementById(`report-tab-${next.id}`)?.focus();
   };
 
-  const { status, overview, utterance } = report;
-  const feedbackCount = overview?.feedback_count ?? 0;
-
-  if (status === "error") {
-    return (
-      <div className="report-page">
-        <Header variant="back" onBack={() => navigate("/")} />
-        <div className="report-page__error" role="alert">
-          <p className="font-18-semibold">결과를 불러오지 못했어요.</p>
-          <p className="font-14-regular">잠시 후 다시 시도해 주세요.</p>
-        </div>
-        <div className="report-page__bottom">
-          <GreenButton text="다시 불러오기" onClick={handleRetry} showArrow={false} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="report-page">
-      <Header variant="back" onBack={() => navigate("/")} />
+      <Header variant="back" onBack={onBack} />
 
       {overview ? (
         <section className="report-page__summary">
           <h1 className="report-page__headline font-22-regular">
-            {overview.headline.lead}
-            <strong className="font-22-bold">{overview.headline.focus}</strong>
+            {overview.summary.headline}
+            <strong className="font-22-bold">{overview.summary.footer}</strong>
           </h1>
-          <p className="report-page__description font-14-regular">{overview.summary}</p>
         </section>
       ) : (
         <section className="report-page__summary" aria-busy="true">
@@ -94,17 +153,16 @@ function Report({ recordingId }) {
             <span className="report-page__skeleton" style={{ width: "62%" }} />
             <span className="report-page__skeleton" style={{ width: "88%" }} />
           </div>
-          <span className="report-page__skeleton font-14-regular" style={{ width: "70%" }} />
         </section>
       )}
 
       <div
         className="report-page__tabs"
         role="tablist"
-        style={{ "--tab-index": TABS.findIndex(({ id }) => id === tab) }}
+        style={{ "--tab-index": tabIndex }}
         onKeyDown={handleTabKeyDown}
       >
-        {TABS.map(({ id, label }) => (
+        {REPORT_TABS.map(({ id, label }) => (
           <button
             key={id}
             id={`report-tab-${id}`}
