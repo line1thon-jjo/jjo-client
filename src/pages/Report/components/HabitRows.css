@@ -1,0 +1,93 @@
+.habit-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.habit-rows__empty {
+  margin: 0;
+
+  color: #515151;
+}
+
+.habit-rows__row {
+  border-bottom: 1px solid #ececec;
+}
+
+.habit-rows__inner {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  padding: 14px 0;
+  border: none;
+
+  background: none;
+  color: #09090b;
+  text-align: left;
+}
+
+.habit-rows__label {
+  color: #09090b;
+}
+
+.habit-rows__row[data-cleared] .habit-rows__label,
+.habit-rows__row[data-cleared] .habit-rows__value > span:first-child {
+  color: #a1a1aa;
+}
+
+.habit-rows__value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding-right: 12px;
+}
+
+.habit-rows__value[data-chevron] {
+  padding-right: 0;
+}
+
+.habit-rows__trend {
+  min-width: 28px;
+
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+
+  color: #a1a1aa;
+  white-space: nowrap;
+}
+
+.habit-rows__trend[data-trend="better"] {
+  color: #648508;
+}
+
+.habit-rows__trend[data-trend="worse"] {
+  color: #ae3f41;
+}
+
+.habit-rows__arrow {
+  width: 9px;
+  height: 11px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.habit-rows__trend[data-trend="better"] .habit-rows__arrow {
+  transform: rotate(180deg);
+}
+
+.habit-rows__chevron {
+  width: 16px;
+  height: 16px;
+  margin-right: -4px;
+}
