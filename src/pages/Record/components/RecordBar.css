@@ -71,3 +71,8 @@
 .record-bar__icon {
   display: block;
 }
+
+.record-bar__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

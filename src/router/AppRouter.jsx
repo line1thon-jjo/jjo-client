@@ -44,7 +44,11 @@ function RecordRoute() {
     <RecordPage
       title={practiceData.title}
       script={practiceData.script}
+      practiceId={practiceData.practiceId}
       onBack={() => navigate(-1)}
+      onUploaded={({ practiceId, recordingId }) =>
+        navigate(`/practices/${practiceId}/reports/${recordingId}`, { replace: true })
+      }
     />
   );
 }
