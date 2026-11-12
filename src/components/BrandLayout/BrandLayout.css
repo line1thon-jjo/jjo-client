@@ -50,6 +50,12 @@
   color: #09090b;
 }
 
+.brand-layout__description {
+  margin: -48px 0 0;
+
+  color: #515151;
+}
+
 .brand-layout__bottom {
   position: sticky;
   bottom: 0;
@@ -76,7 +82,13 @@
 
 .brand-layout[data-intro="true"] .brand-layout__title,
 .brand-layout[data-intro="true"] .brand-layout__content,
-.brand-layout[data-intro="true"] .brand-layout__bottom {
+.brand-layout[data-intro="true"] .brand-layout__description {
+  margin: -48px 0 0;
+
+  color: #515151;
+}
+
+.brand-layout__bottom {
   animation: brand-layout-fade-up var(--duration-slow) var(--ease-standard) both;
 }
 
@@ -88,7 +100,13 @@
   animation-delay: 920ms;
 }
 
-.brand-layout[data-intro="true"] .brand-layout__bottom {
+.brand-layout[data-intro="true"] .brand-layout__description {
+  margin: -48px 0 0;
+
+  color: #515151;
+}
+
+.brand-layout__bottom {
   animation-delay: 1000ms;
 }
 

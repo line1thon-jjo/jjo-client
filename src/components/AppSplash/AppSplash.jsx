@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import BrandDescription from "@/components/BrandLayout/BrandDescription";
 import BrandLayout from "@/components/BrandLayout/BrandLayout";
 import { useAuth } from "@/auth/useAuth";
 import { SPLASH_HOLD_MS } from "@/constants/splash";
@@ -33,7 +34,9 @@ export default function AppSplash() {
         if (event.target === event.currentTarget && isLeaving) setHasLeft(true);
       }}
     >
-      <BrandLayout intro />
+      <BrandLayout intro>
+        <BrandDescription />
+      </BrandLayout>
     </div>
   );
 }

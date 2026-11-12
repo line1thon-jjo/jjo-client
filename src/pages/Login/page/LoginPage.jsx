@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import BrandDescription from "@/components/BrandLayout/BrandDescription";
 import BrandLayout from "@/components/BrandLayout/BrandLayout";
 import GoogleLoginButton from "@/pages/Login/components/GoogleLoginButton";
 import { getErrorMessage } from "@/api/messages";
@@ -32,11 +33,7 @@ export default function LoginPage() {
 
   return (
     <BrandLayout footer={<GoogleLoginButton onCredential={handleLogin} onError={handleGoogleError} loading={isLoading} />}>
-      <p className="login-page__description font-15-medium line-height-160">
-        대본을 읽는 내 목소리를
-        <br />
-        글자 모양으로 확인해 보세요.
-      </p>
+      <BrandDescription />
 
       {errorMessage && (
         <p className="login-page__error font-14-medium" role="alert">
