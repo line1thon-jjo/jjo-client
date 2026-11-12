@@ -49,7 +49,7 @@ export default function DesktopGuide() {
               {screen.label}
             </p>
 
-            <h2 className="desktop-guide__heading font-22-bold line-height-130">{screen.title}</h2>
+            <h2 className="desktop-guide__heading font-20-bold line-height-130">{screen.title}</h2>
 
             <p className="desktop-guide__body font-16-regular line-height-160">{screen.description}</p>
 
