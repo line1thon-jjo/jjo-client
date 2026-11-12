@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
 
-import { buildGlyphs, findCharAt, groupWords } from "../lib/buildGlyphs";
+import { buildGlyphs, findCharAt, groupWords } from "@/pages/Report/lib/buildGlyphs";
 
 import "./UtteranceText.css";
 
@@ -70,7 +70,7 @@ const Space = memo(function Space({ glyph, isPlaying }) {
   );
 });
 
-export default function UtteranceText({ utterance, timeMs = 0, isPlaying = false, onSelectSegment }) {
+export default function UtteranceText({ utterance, timeMs = 0, isPlaying = false, focusPace = null, onSelectSegment }) {
   const glyphs = useMemo(() => buildGlyphs(utterance), [utterance]);
   const tokens = useMemo(() => groupWords(glyphs), [glyphs]);
   const [isReady, setIsReady] = useState(false);
@@ -107,6 +107,7 @@ export default function UtteranceText({ utterance, timeMs = 0, isPlaying = false
       style={{ "--sweep-step": `${Math.min(4, 1400 / glyphs.length)}ms` }}
       data-ready={isReady || undefined}
       data-settled={isSettled || undefined}
+      data-focus-pace={focusPace || undefined}
       data-selectable={Boolean(onSelectSegment) || undefined}
       onClick={handleClick}
     >

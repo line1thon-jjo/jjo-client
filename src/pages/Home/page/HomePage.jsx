@@ -65,7 +65,7 @@ export default function HomePage() {
   };
 
   const handleOpenPractice = () => {
-    navigate("/reports/mock");
+    navigate("/practices/1/reports/3");
   };
 
   return (

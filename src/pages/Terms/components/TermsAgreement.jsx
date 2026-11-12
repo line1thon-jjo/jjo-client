@@ -1,5 +1,5 @@
 import AgreementCheckbox from "./AgreementCheckbox";
-import chevronRight from "../../../assets/icons/chevron-right.svg";
+import chevronRight from "@/assets/icons/chevron-right.svg";
 
 import "./TermsAgreement.css";
 

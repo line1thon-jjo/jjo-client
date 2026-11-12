@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import * as authApi from "../api/auth";
+import * as authApi from "@/api/auth";
+import { onUnauthorized } from "@/api/client";
 import { AuthContext } from "./AuthContext";
 
 export default function AuthProvider({ children }) {
@@ -9,15 +10,32 @@ export default function AuthProvider({ children }) {
   const [signupToken, setSignupToken] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     authApi
-      .getMe()
+      .getMe({ signal: controller.signal })
       .then(({ user }) => setUser(user))
-      .catch(() => setUser(null))
-      .finally(() => setIsLoading(false));
+      .catch((error) => {
+        if (error.name !== "AbortError") setUser(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
+
+    return () => controller.abort();
   }, []);
 
-  const login = useCallback(async () => {
-    const result = await authApi.loginWithGoogle();
+  useEffect(
+    () =>
+      onUnauthorized(() => {
+        setSignupToken(null);
+        setUser(null);
+      }),
+    [],
+  );
+
+  const login = useCallback(async (idToken) => {
+    const result = await authApi.loginWithGoogle(idToken);
 
     if (result.status === "signup_required") {
       setSignupToken(result.signup_token);
