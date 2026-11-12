@@ -6,6 +6,7 @@ import GreenButton from "@/components/Button/GreenButton";
 import Header from "@/components/Header/Header";
 import AnalyzingScreen from "@/pages/Report/components/AnalyzingScreen";
 import AttemptSelector from "@/pages/Report/components/AttemptSelector";
+import FeedbackList from "@/pages/Report/components/FeedbackList";
 import OverviewPanel from "@/pages/Report/components/OverviewPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
@@ -270,7 +271,7 @@ function ReportResult({ report, result, onSelectAttempt, onBack }) {
           className="report-page__panel"
           hidden={tab !== "feedback"}
         >
-          <p className="report-page__placeholder font-15-medium">AI 피드백은 준비 중이에요.</p>
+          {feedback ? <FeedbackList items={feedback.items} /> : <div className="report-page__loading" />}
         </section>
       </main>
 

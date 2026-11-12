@@ -134,8 +134,8 @@
 
   padding: 0 4px;
   border-radius: 8px;
-  background-color: #09090b;
-  color: #ffffff;
+  background-color: #d9f768;
+  color: #09090b;
   font-size: 10px;
   font-weight: 700;
 
@@ -165,13 +165,6 @@
 
 .report-page__loading {
   height: 240px;
-}
-
-.report-page__placeholder {
-  margin: 40px 0 0;
-
-  color: #7a7a82;
-  text-align: center;
 }
 
 @keyframes report-page-fade-up {
