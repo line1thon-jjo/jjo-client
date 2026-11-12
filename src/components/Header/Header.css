@@ -33,6 +33,12 @@
   padding: 0;
   border: none;
   background: transparent;
+
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.header__button[data-leaving] {
+  opacity: 0;
 }
 
 .header__icon {

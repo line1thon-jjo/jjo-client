@@ -6,15 +6,15 @@ import TermsContent from "@/pages/Terms/components/TermsContent";
 import { TERMS } from "@/pages/Terms/data/terms";
 import { getErrorMessage } from "@/api/messages";
 import { useAuth } from "@/auth/useAuth";
+import { MENU_LEAVE_MS } from "@/constants/menu";
 
 import chevronRight from "@/assets/icons/chevron-right.svg";
-import logo from "@/assets/images/jjo-logo.svg";
 
 import "./MenuPanel.css";
 
 const DOCUMENTS = TERMS.filter((term) => term.required);
 
-export default function MenuPanel({ open, onClose }) {
+export default function MenuPanel({ open, onClose, onLeave }) {
   const { user, logout, withdraw } = useAuth();
   const [isRendered, setIsRendered] = useState(open);
   const [openTermId, setOpenTermId] = useState(null);
@@ -22,6 +22,7 @@ export default function MenuPanel({ open, onClose }) {
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState(null);
+  const [isLeaving, setIsLeaving] = useState(false);
   const panel = useRef(null);
   const onCloseRef = useRef(onClose);
   const hasSheet = Boolean(openTermId) || isWithdrawOpen;
@@ -67,6 +68,12 @@ export default function MenuPanel({ open, onClose }) {
     if (!open && event.target === panel.current) setIsRendered(false);
   };
 
+  const handleLogout = () => {
+    setIsLeaving(true);
+    onLeave?.();
+    setTimeout(logout, MENU_LEAVE_MS);
+  };
+
   const handleOpenTerm = (id) => {
     setOpenTermId(id);
     setLastTermId(id);
@@ -91,9 +98,7 @@ export default function MenuPanel({ open, onClose }) {
 
   return (
     <>
-      <div className="menu-panel" data-state={open ? "open" : "closed"}>
-        <div className="menu-panel__overlay" onClick={onClose} aria-hidden="true" />
-
+      <div className="menu-panel" data-state={open ? "open" : "closed"} data-leaving={isLeaving || undefined}>
         <nav
           ref={panel}
           className="menu-panel__panel"
@@ -101,9 +106,7 @@ export default function MenuPanel({ open, onClose }) {
           tabIndex={-1}
           onAnimationEnd={handleAnimationEnd}
         >
-          <div className="menu-panel__top">
-            <img src={logo} alt="" className="menu-panel__logo" />
-          </div>
+          <div className="menu-panel__top" />
 
           <section className="menu-panel__account" aria-label="내 계정">
             {user.profile_image_url ? (
@@ -129,7 +132,7 @@ export default function MenuPanel({ open, onClose }) {
               </li>
             ))}
             <li>
-              <button type="button" className="menu-panel__row font-16-medium" onClick={logout}>
+              <button type="button" className="menu-panel__row font-16-medium" onClick={handleLogout}>
                 로그아웃
               </button>
             </li>

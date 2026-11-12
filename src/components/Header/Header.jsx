@@ -13,6 +13,7 @@ export default function Header({
   onMenuClick,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const isBack = variant === "back";
 
   return (
@@ -45,6 +46,7 @@ export default function Header({
         aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
         aria-expanded={isMenuOpen}
         data-open={isMenuOpen || undefined}
+        data-leaving={isLeaving || undefined}
       >
         <span className="header__burger" aria-hidden="true">
           <span />
@@ -53,7 +55,7 @@ export default function Header({
         </span>
       </button>
 
-      <MenuPanel open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <MenuPanel open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onLeave={() => setIsLeaving(true)} />
     </header>
   );
 }
