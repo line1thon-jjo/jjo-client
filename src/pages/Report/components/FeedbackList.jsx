@@ -8,15 +8,27 @@ function FeedbackItem({ item, onPlay }) {
   const [isOpen, setIsOpen] = useState(item.rank === 1);
   const isPriority = item.rank === 1;
   const bodyId = `feedback-body-${item.rank}`;
+  const toggle = () => setIsOpen((open) => !open);
+
+  const handleItemClick = (event) => {
+    if (event.target.closest("button")) return;
+    if (window.getSelection()?.toString()) return;
+    toggle();
+  };
 
   return (
-    <li className="feedback-list__item" data-open={isOpen || undefined} style={{ "--i": item.rank - 1 }}>
+    <li
+      className="feedback-list__item"
+      data-open={isOpen || undefined}
+      style={{ "--i": item.rank - 1 }}
+      onClick={handleItemClick}
+    >
       <button
         type="button"
         className="feedback-list__toggle"
         aria-expanded={isOpen}
         aria-controls={bodyId}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggle}
       >
         <span className="feedback-list__rank font-15-regular">{String(item.rank).padStart(2, "0")}</span>
         <span className="feedback-list__chip font-14-medium" data-priority={isPriority || undefined}>
