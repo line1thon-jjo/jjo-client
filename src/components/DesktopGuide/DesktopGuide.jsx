@@ -27,15 +27,6 @@ export default function DesktopGuide() {
           </h2>
 
           <p className="desktop-guide__body font-16-regular line-height-160">{GUIDE_PITCH.summary}</p>
-
-          <dl className="desktop-guide__list">
-            {GUIDE_PITCH.sections.map(({ label, text }) => (
-              <div key={label} className="desktop-guide__item">
-                <dt className="desktop-guide__label font-14-semibold">{label}</dt>
-                <dd className="desktop-guide__text font-15-regular line-height-150">{text}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </aside>
 
