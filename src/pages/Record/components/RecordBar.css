@@ -1,0 +1,73 @@
+.record-bar {
+  width: 100%;
+  height: 100%;
+  padding: 0 14px 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.record-bar__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.record-bar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  background-color: #565656;
+}
+
+.record-bar__dot--active {
+  background-color: #ff2d28;
+}
+
+.record-bar__text {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #ececec;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-bar__text--active {
+  color: #ffffff;
+}
+
+.record-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.record-bar__button {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 1000px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-bar__button--main {
+  background-color: #d9f768;
+}
+
+.record-bar__button--dark {
+  background-color: #2b2b2d;
+}
+
+.record-bar__button--red {
+  background-color: #410307;
+}
+
+.record-bar__icon {
+  display: block;
+}

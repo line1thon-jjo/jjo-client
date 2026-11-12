@@ -3,6 +3,7 @@ import {
   Navigate,
   Routes,
   Route,
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 
@@ -16,6 +17,7 @@ import LoginPage from "../pages/Login/page/LoginPage";
 import TermsPage from "../pages/Terms/page/TermsPage";
 import OnboardingPage from "../pages/Onboarding/page/OnboardingPage";
 import ReportPage from "../pages/Report/page/ReportPage";
+import RecordPage from "../pages/Record/page/RecordPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();
@@ -23,6 +25,25 @@ function ScriptRoute() {
   return (
     <ScriptPage
       onBack={() => navigate("/")}
+      onRecord={(practiceData) => navigate("/record", { state: practiceData })}
+    />
+  );
+}
+
+function RecordRoute() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const practiceData = location.state;
+
+  if (!practiceData?.title || !practiceData?.script) {
+    return <Navigate to="/script" replace />;
+  }
+
+  return (
+    <RecordPage
+      title={practiceData.title}
+      script={practiceData.script}
+      onBack={() => navigate(-1)}
     />
   );
 }
@@ -47,6 +68,7 @@ export default function AppRouter() {
               <Route element={<RequireOnboarded />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/script" element={<ScriptRoute />} />
+                <Route path="/record" element={<RecordRoute />} />
                 <Route path="/reports/:recordingId" element={<ReportPage />} />
               </Route>
             </Route>
