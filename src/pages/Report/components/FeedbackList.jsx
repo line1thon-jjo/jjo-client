@@ -6,7 +6,6 @@ import "./FeedbackList.css";
 
 function FeedbackItem({ item, onPlay }) {
   const [isOpen, setIsOpen] = useState(item.rank === 1);
-  const isPriority = item.rank === 1;
   const bodyId = `feedback-body-${item.rank}`;
   const toggle = () => setIsOpen((open) => !open);
 
@@ -23,21 +22,19 @@ function FeedbackItem({ item, onPlay }) {
       style={{ "--i": item.rank - 1 }}
       onClick={handleItemClick}
     >
-      <button
-        type="button"
-        className="feedback-list__toggle"
-        aria-expanded={isOpen}
-        aria-controls={bodyId}
-        onClick={toggle}
-      >
-        <span className="feedback-list__rank font-15-regular">{String(item.rank).padStart(2, "0")}</span>
-        <span className="feedback-list__chip font-14-medium" data-priority={isPriority || undefined}>
-          {isPriority ? "우선 연습" : "다음 연습"}
-        </span>
-        <img src={chevronIcon} alt="" className="feedback-list__chevron" />
-      </button>
-
-      <h3 className="feedback-list__title font-17-semibold">{item.title}</h3>
+      <h3 className="feedback-list__heading">
+        <button
+          type="button"
+          className="feedback-list__toggle"
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          onClick={toggle}
+        >
+          <span className="feedback-list__rank font-16-semibold">{String(item.rank).padStart(2, "0")}</span>
+          <span className="feedback-list__title font-17-semibold">{item.title}</span>
+          <img src={chevronIcon} alt="" className="feedback-list__chevron" />
+        </button>
+      </h3>
 
       <div id={bodyId} className="feedback-list__body">
         <div className="feedback-list__body-inner">
