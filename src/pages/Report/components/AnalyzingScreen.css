@@ -1,0 +1,150 @@
+.analyzing-screen {
+  --glow-color: 217, 247, 104;
+
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 50;
+
+  width: min(100%, var(--app-width));
+
+  transform: translateX(-50%);
+
+  animation: analyzing-screen-in var(--duration-slow) var(--ease-standard) both;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fafafa;
+  overflow: hidden;
+}
+
+.analyzing-screen__stage {
+  position: relative;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  padding-bottom: 64px;
+}
+
+.analyzing-screen__glow {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: 50%;
+
+  width: 480px;
+  height: 480px;
+  margin: -240px 0 0 -240px;
+
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(var(--glow-color), 1) 0%,
+    rgba(var(--glow-color), 0.85) 32%,
+    rgba(var(--glow-color), 0.25) 58%,
+    rgba(var(--glow-color), 0) 72%
+  );
+
+  animation: analyzing-screen-breathe 2.4s var(--ease-standard) infinite alternate;
+}
+
+.analyzing-screen__label {
+  position: relative;
+
+  display: grid;
+  margin: 0;
+
+  color: #09090b;
+}
+
+.analyzing-screen__text {
+  grid-area: 1 / 1;
+
+  text-align: center;
+
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard);
+}
+
+.analyzing-screen__text[data-phase="done"] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.analyzing-screen__hint {
+  position: relative;
+
+  margin: 0;
+
+  color: #515151;
+
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+.analyzing-screen[data-done] {
+  pointer-events: none;
+
+  animation: analyzing-screen-out var(--duration-slow) var(--ease-standard) 1080ms forwards;
+}
+
+.analyzing-screen[data-done] .analyzing-screen__glow {
+  animation: analyzing-screen-fill 720ms var(--ease-standard) forwards;
+}
+
+.analyzing-screen[data-done] .analyzing-screen__text[data-phase="analyzing"] {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.analyzing-screen[data-done] .analyzing-screen__text[data-phase="done"] {
+  opacity: 1;
+  transform: none;
+  transition-delay: 160ms;
+}
+
+.analyzing-screen[data-done] .analyzing-screen__hint {
+  opacity: 0;
+}
+
+.analyzing-screen[data-done] .header {
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+@keyframes analyzing-screen-breathe {
+  from {
+    opacity: 0.25;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes analyzing-screen-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes analyzing-screen-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes analyzing-screen-fill {
+  to {
+    opacity: 1;
+    transform: scale(8);
+  }
+}
