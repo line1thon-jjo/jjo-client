@@ -7,17 +7,17 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import AuthProvider from "../auth/AuthProvider";
-import MotionProvider from "../lib/motion/MotionProvider";
-import { GuestOnly, RequireOnboarded, RequireSignup, RequireUser } from "../auth/guards";
+import AuthProvider from "@/auth/AuthProvider";
+import MotionProvider from "@/lib/motion/MotionProvider";
+import { GuestOnly, RequireOnboarded, RequireSignup, RequireUser } from "@/auth/guards";
 
-import HomePage from "../pages/Home/page/HomePage";
-import ScriptPage from "../pages/Script/page/ScriptPage";
-import LoginPage from "../pages/Login/page/LoginPage";
-import TermsPage from "../pages/Terms/page/TermsPage";
-import OnboardingPage from "../pages/Onboarding/page/OnboardingPage";
-import ReportPage from "../pages/Report/page/ReportPage";
-import RecordPage from "../pages/Record/page/RecordPage";
+import HomePage from "@/pages/Home/page/HomePage";
+import ScriptPage from "@/pages/Script/page/ScriptPage";
+import LoginPage from "@/pages/Login/page/LoginPage";
+import TermsPage from "@/pages/Terms/page/TermsPage";
+import OnboardingPage from "@/pages/Onboarding/page/OnboardingPage";
+import ReportPage from "@/pages/Report/page/ReportPage";
+import RecordPage from "@/pages/Record/page/RecordPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();

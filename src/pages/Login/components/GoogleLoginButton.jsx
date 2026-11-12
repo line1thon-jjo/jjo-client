@@ -1,4 +1,4 @@
-import googleLogo from "../../../assets/icons/google-logo.svg";
+import googleLogo from "@/assets/icons/google-logo.svg";
 
 import "./GoogleLoginButton.css";
 

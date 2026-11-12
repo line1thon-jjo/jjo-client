@@ -1,5 +1,5 @@
 import { wait } from "./mock";
-import { MOCK_DURATION_MS, MOCK_UTTERANCE } from "../mocks/utterance";
+import { MOCK_DURATION_MS, MOCK_UTTERANCE } from "@/mocks/utterance";
 
 export class ReportError extends Error {
   constructor(status, code) {

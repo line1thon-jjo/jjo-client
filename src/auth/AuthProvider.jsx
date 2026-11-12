@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import * as authApi from "../api/auth";
+import * as authApi from "@/api/auth";
 import { AuthContext } from "./AuthContext";
 
 export default function AuthProvider({ children }) {

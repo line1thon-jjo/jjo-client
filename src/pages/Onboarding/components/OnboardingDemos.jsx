@@ -1,6 +1,6 @@
 import * as m from "motion/react-m";
 
-import { activeState, drawX, fadeUp, growWidth, stretchX } from "../../../lib/motion/presets";
+import { activeState, drawX, fadeUp, growWidth, stretchX } from "@/lib/motion/presets";
 
 import "./OnboardingDemos.css";
 

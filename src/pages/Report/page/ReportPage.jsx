@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import BottomSheet from "../../../components/BottomSheet/BottomSheet";
-import GreenButton from "../../../components/Button/GreenButton";
-import Header from "../../../components/Header/Header";
-import UtteranceGuide from "../components/UtteranceGuide";
-import UtteranceText from "../components/UtteranceText";
-import { getOverview, getUtterance } from "../../../api/reports";
+import BottomSheet from "@/components/BottomSheet/BottomSheet";
+import GreenButton from "@/components/Button/GreenButton";
+import Header from "@/components/Header/Header";
+import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
+import UtteranceText from "@/pages/Report/components/UtteranceText";
+import { getOverview, getUtterance } from "@/api/reports";
 
-import infoIcon from "../../../assets/icons/info-icon.svg";
+import infoIcon from "@/assets/icons/info-icon.svg";
 
 import "./ReportPage.css";
 

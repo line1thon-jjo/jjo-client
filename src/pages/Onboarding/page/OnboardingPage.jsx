@@ -2,12 +2,12 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as m from "motion/react-m";
 
-import GreenButton from "../../../components/Button/GreenButton";
-import PageIndicator from "../components/PageIndicator";
-import { BreathDemo, IntonationDemo, RetryDemo } from "../components/OnboardingDemos";
-import { NEXT_STEP_PATH } from "../../../auth/AuthContext";
-import { useAuth } from "../../../auth/useAuth";
-import { activeState, pop } from "../../../lib/motion/presets";
+import GreenButton from "@/components/Button/GreenButton";
+import PageIndicator from "@/pages/Onboarding/components/PageIndicator";
+import { BreathDemo, IntonationDemo, RetryDemo } from "@/pages/Onboarding/components/OnboardingDemos";
+import { NEXT_STEP_PATH } from "@/auth/AuthContext";
+import { useAuth } from "@/auth/useAuth";
+import { activeState, pop } from "@/lib/motion/presets";
 
 import "./OnboardingPage.css";
 

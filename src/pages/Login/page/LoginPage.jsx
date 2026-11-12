@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BrandLayout from "../../../components/BrandLayout/BrandLayout";
-import GoogleLoginButton from "../components/GoogleLoginButton";
-import { NEXT_STEP_PATH } from "../../../auth/AuthContext";
-import { useAuth } from "../../../auth/useAuth";
+import BrandLayout from "@/components/BrandLayout/BrandLayout";
+import GoogleLoginButton from "@/pages/Login/components/GoogleLoginButton";
+import { NEXT_STEP_PATH } from "@/auth/AuthContext";
+import { useAuth } from "@/auth/useAuth";
 
 import "./LoginPage.css";
 

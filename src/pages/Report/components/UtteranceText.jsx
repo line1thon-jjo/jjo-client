@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
 
-import { buildGlyphs, findCharAt, groupWords } from "../lib/buildGlyphs";
+import { buildGlyphs, findCharAt, groupWords } from "@/pages/Report/lib/buildGlyphs";
 
 import "./UtteranceText.css";
 

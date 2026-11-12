@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BottomSheet from "../../../components/BottomSheet/BottomSheet";
-import BrandLayout from "../../../components/BrandLayout/BrandLayout";
-import GreenButton from "../../../components/Button/GreenButton";
-import TermsAgreement from "../components/TermsAgreement";
-import TermsContent from "../components/TermsContent";
-import { TERMS } from "../data/terms";
-import { NEXT_STEP_PATH } from "../../../auth/AuthContext";
-import { useAuth } from "../../../auth/useAuth";
+import BottomSheet from "@/components/BottomSheet/BottomSheet";
+import BrandLayout from "@/components/BrandLayout/BrandLayout";
+import GreenButton from "@/components/Button/GreenButton";
+import TermsAgreement from "@/pages/Terms/components/TermsAgreement";
+import TermsContent from "@/pages/Terms/components/TermsContent";
+import { TERMS } from "@/pages/Terms/data/terms";
+import { NEXT_STEP_PATH } from "@/auth/AuthContext";
+import { useAuth } from "@/auth/useAuth";
 
 import "./TermsPage.css";
 
