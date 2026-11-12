@@ -103,3 +103,9 @@ export async function logout() {
     return;
   }
 }
+
+export async function withdraw() {
+  await wait();
+  currentAccount();
+  await logout();
+}

@@ -1,0 +1,144 @@
+.settings-page {
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fafafa;
+}
+
+.settings-page__main {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 12px 20px calc(var(--bottom-action-gap) + env(safe-area-inset-bottom));
+}
+
+.settings-page__account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 8px 0 28px;
+}
+
+.settings-page__avatar {
+  flex-shrink: 0;
+
+  width: 52px;
+  height: 52px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+  background-color: #e9eedf;
+  color: #648508;
+  object-fit: cover;
+}
+
+.settings-page__identity {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-page__name,
+.settings-page__email {
+  margin: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-page__name {
+  color: #09090b;
+}
+
+.settings-page__email {
+  color: #71717a;
+}
+
+.settings-page__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #ececee;
+
+  list-style: none;
+}
+
+.settings-page__list li {
+  border-bottom: 1px solid #ececee;
+}
+
+.settings-page__row {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 0;
+  border: none;
+
+  background: none;
+  color: #09090b;
+  text-align: left;
+}
+
+.settings-page__row img {
+  width: 20px;
+  height: 20px;
+
+  opacity: 0.5;
+}
+
+.settings-page__withdraw {
+  align-self: flex-start;
+
+  margin-top: auto;
+  padding: 12px 0;
+  border: none;
+
+  background: none;
+  color: #8a8a93;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.settings-page__sheet-text {
+  margin: 0;
+
+  color: #3f3f46;
+}
+
+.settings-page__error {
+  margin: 12px 0 0;
+
+  color: #ae3f41;
+}
+
+.settings-page__sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-page__confirm {
+  padding: 14px 0;
+  border: none;
+
+  background: none;
+  color: #ae3f41;
+}
+
+.settings-page__confirm:disabled {
+  opacity: 0.5;
+}

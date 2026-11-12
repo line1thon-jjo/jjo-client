@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import "./Header.css";
 
 import logo from "../../assets/images/jjo-logo.svg";
@@ -8,7 +10,9 @@ export default function Header({
   variant = "default",
   onBack,
   onMenuClick,
+  showMenu = true,
 }) {
+  const navigate = useNavigate();
   const isBack = variant === "back";
 
   return (
@@ -34,18 +38,20 @@ export default function Header({
         />
       )}
 
-      <button
-        type="button"
-        className="header__button"
-        onClick={onMenuClick}
-        aria-label="메뉴 열기"
-      >
-        <img
-          src={menuIcon}
-          alt=""
-          className="header__icon"
-        />
-      </button>
+      {showMenu && (
+        <button
+          type="button"
+          className="header__button"
+          onClick={onMenuClick ?? (() => navigate("/settings"))}
+          aria-label="메뉴 열기"
+        >
+          <img
+            src={menuIcon}
+            alt=""
+            className="header__icon"
+          />
+        </button>
+      )}
     </header>
   );
 }

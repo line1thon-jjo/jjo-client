@@ -1,5 +1,6 @@
 import * as mock from "@/api/mocks/auth";
 import { request, USE_MOCK } from "@/api/client";
+import { ApiError } from "@/api/errors";
 import { clearAccessToken, setAccessToken } from "@/api/token";
 import type {
   Agreements,
@@ -46,6 +47,15 @@ const server = {
   async logout() {
     clearAccessToken();
   },
+
+  async withdraw({ signal }: RequestOptions = {}) {
+    try {
+      await request<null>("/auth/me", { method: "DELETE", signal });
+    } catch (error) {
+      if (!(error instanceof ApiError && error.code === "ACCOUNT_DELETED_CLEANUP_PENDING")) throw error;
+    }
+    clearAccessToken();
+  },
 };
 
-export const { loginWithGoogle, signup, getMe, completeOnboarding, logout }: typeof server = USE_MOCK ? mock : server;
+export const { loginWithGoogle, signup, getMe, completeOnboarding, logout, withdraw }: typeof server = USE_MOCK ? mock : server;
