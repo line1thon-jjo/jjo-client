@@ -6,6 +6,7 @@ import AddButton from "@/pages/Home/components/AddButton";
 import PracticeRow from "@/pages/Home/components/PracticeRow";
 import { usePracticeList } from "@/pages/Home/hooks/usePracticeList";
 import { greetingFor } from "@/pages/Home/lib/greeting";
+import { revealFrom } from "@/lib/transition/revealFrom";
 import { isDemoId } from "@/api/demo";
 import { getErrorMessage } from "@/api/messages";
 import { useAuth } from "@/auth/useAuth";
@@ -22,7 +23,7 @@ export default function HomePage() {
 
   const currentOpenId = openId === undefined ? entries?.[0]?.practice.id : openId;
 
-  const handleAddPractice = () => navigate("/script");
+  const handleAddPractice = (event) => revealFrom(event.currentTarget, () => navigate("/script"));
   const handleRecord = (practice) =>
     navigate("/record", {
       state: { title: practice.title, script: practice.script, practiceId: isDemoId(practice.id) ? undefined : practice.id },

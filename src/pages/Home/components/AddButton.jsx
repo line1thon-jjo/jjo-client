@@ -1,4 +1,5 @@
 import "./AddButton.css";
+import "@/lib/transition/revealFrom.css";
 
 export default function AddButton({ onClick }) {
   return (
