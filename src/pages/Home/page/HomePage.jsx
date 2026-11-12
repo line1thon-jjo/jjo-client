@@ -23,7 +23,7 @@ export default function HomePage() {
 
   const currentOpenId = openId === undefined ? entries?.[0]?.practice.id : openId;
 
-  const handleAddPractice = (event) => revealFrom(event.currentTarget, () => navigate("/script"));
+  const handleAddPractice = (event) => revealFrom(event.currentTarget, () => navigate("/script"), ".script-page");
   const handleRecord = (practice) =>
     navigate("/record", {
       state: { title: practice.title, script: practice.script, practiceId: isDemoId(practice.id) ? undefined : practice.id },
