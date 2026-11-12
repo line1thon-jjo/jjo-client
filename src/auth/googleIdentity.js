@@ -1,10 +1,12 @@
 import { ApiError } from "@/api/errors";
 import { GOOGLE_IDENTITY_SCRIPT } from "@/constants/google";
 
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 let loading = null;
 let handleCredential = () => {};
 
-export function loadGoogleIdentity(clientId) {
+export function loadGoogleIdentity() {
   loading ??= new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = GOOGLE_IDENTITY_SCRIPT;
@@ -12,7 +14,7 @@ export function loadGoogleIdentity(clientId) {
 
     script.onload = () => {
       window.google.accounts.id.initialize({
-        client_id: clientId,
+        client_id: CLIENT_ID,
         callback: ({ credential }) => handleCredential(credential),
         ux_mode: "popup",
       });
@@ -29,6 +31,10 @@ export function loadGoogleIdentity(clientId) {
   });
 
   return loading;
+}
+
+export function preloadGoogleIdentity() {
+  loadGoogleIdentity().catch(() => {});
 }
 
 export function onGoogleCredential(handler) {

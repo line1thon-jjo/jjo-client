@@ -8,8 +8,6 @@ import googleLogo from "@/assets/icons/google-logo.svg";
 
 import "./GoogleLoginButton.css";
 
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
 export default function GoogleLoginButton({ onCredential, onError, loading = false }) {
   const label = <span className="font-15-semibold">{loading ? "로그인 중" : "Google로 시작하기"}</span>;
   const logo = <img src={googleLogo} alt="" className="google-login-button__logo" />;
@@ -47,7 +45,7 @@ function GoogleIdentityButton({ onCredential, onError, loading, children }) {
     let isActive = true;
     let observer;
 
-    loadGoogleIdentity(CLIENT_ID)
+    loadGoogleIdentity()
       .then((identity) => {
         if (!isActive) return;
         const overlay = overlayRef.current;
