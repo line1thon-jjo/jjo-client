@@ -11,6 +11,8 @@
 
   transform: translateX(-50%);
 
+  animation: analyzing-screen-in var(--duration-slow) var(--ease-standard) both;
+
   display: flex;
   flex-direction: column;
 
@@ -86,14 +88,14 @@
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
-.analyzing-screen[data-done] .analyzing-screen__glow {
-  animation:
-    analyzing-screen-fill 720ms var(--ease-standard) forwards,
-    analyzing-screen-out var(--duration-slow) var(--ease-standard) 1080ms forwards;
+.analyzing-screen[data-done] {
+  pointer-events: none;
+
+  animation: analyzing-screen-out var(--duration-slow) var(--ease-standard) 1080ms forwards;
 }
 
-.analyzing-screen[data-done] .analyzing-screen__label {
-  animation: analyzing-screen-out var(--duration-slow) var(--ease-standard) 1080ms forwards;
+.analyzing-screen[data-done] .analyzing-screen__glow {
+  animation: analyzing-screen-fill 720ms var(--ease-standard) forwards;
 }
 
 .analyzing-screen[data-done] .analyzing-screen__text[data-phase="analyzing"] {
@@ -125,6 +127,12 @@
   to {
     opacity: 1;
     transform: scale(1.05);
+  }
+}
+
+@keyframes analyzing-screen-in {
+  from {
+    opacity: 0;
   }
 }
 

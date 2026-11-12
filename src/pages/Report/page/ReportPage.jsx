@@ -190,11 +190,14 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
     );
   }
 
-  if (isInProgress || (isCompleted && sawProgress && !hasCelebrated)) {
-    return <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />;
-  }
+  const showsAnalyzing = isInProgress || (isCompleted && sawProgress && !hasCelebrated);
 
-  return <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />;
+  return (
+    <>
+      {!isInProgress && <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />}
+      {showsAnalyzing && <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />}
+    </>
+  );
 }
 
 function ReportNotice({ title, description, action, onAction }) {
