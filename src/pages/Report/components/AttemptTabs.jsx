@@ -4,7 +4,7 @@ import { ATTEMPT_STATUS_LABELS } from "@/constants/report";
 
 import "./AttemptTabs.css";
 
-export default function AttemptTabs({ attempts, currentId, onSelect }) {
+export default function AttemptTabs({ attempts, currentId, details, onSelect }) {
   const listRef = useRef(null);
   const sorted = [...attempts].sort((a, b) => a.attempt_no - b.attempt_no);
 
@@ -30,6 +30,13 @@ export default function AttemptTabs({ attempts, currentId, onSelect }) {
                 onClick={() => !isCurrent && onSelect(id)}
               >
                 {attemptNo}회차
+                <span
+                  className="attempt-tabs__detail"
+                  data-visible={(isCurrent && Boolean(details[id])) || undefined}
+                  aria-hidden={!isCurrent}
+                >
+                  <span className="attempt-tabs__detail-text">{details[id]}</span>
+                </span>
                 {statusLabel && (
                   <span className="attempt-tabs__status" data-status={status} aria-label={statusLabel} />
                 )}

@@ -11,7 +11,7 @@ import OverviewPanel from "@/pages/Report/components/OverviewPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
-import { findPreviousAttempt, formatDuration, formatRecordedAt } from "@/pages/Report/lib/attempts";
+import { findPreviousAttempt, formatDuration } from "@/pages/Report/lib/attempts";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
 import { getAttempts, getFeedback, getOverview, getUtterance } from "@/api/reports";
 import { REPORT_IN_PROGRESS, REPORT_TABS, REPORT_WARNINGS } from "@/constants/report";
@@ -31,6 +31,7 @@ function PracticeReport({ practiceId, recordingId }) {
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState(null);
   const [current, setCurrent] = useState(null);
+  const [durations, setDurations] = useState({});
   const [tab, setTab] = useState(REPORT_TABS[0].id);
 
   useEffect(() => {
@@ -47,6 +48,9 @@ function PracticeReport({ practiceId, recordingId }) {
 
   const handleReport = useCallback((report) => {
     setCurrent(report);
+    setDurations((saved) =>
+      saved[report.recording_id] ? saved : { ...saved, [report.recording_id]: formatDuration(report.duration_ms) },
+    );
     setAttempts((list) =>
       list?.map((attempt) =>
         attempt.recording_id === report.recording_id ? { ...attempt, status: report.status } : attempt,
@@ -57,12 +61,8 @@ function PracticeReport({ practiceId, recordingId }) {
   const handleBack = () => navigate("/");
   const handleSelect = (id) => navigate(`/practices/${practiceId}/reports/${id}`, { replace: true });
 
-  const currentAttempt = attempts?.find((attempt) => String(attempt.recording_id) === String(recordingId));
-  const currentReport = String(current?.recording_id) === String(recordingId) ? current : null;
-  const recordedAt = currentReport?.recorded_at ?? currentAttempt?.recorded_at;
-
-  const chrome = (
-    <>
+  return (
+    <div className="report-page">
       <Header variant="back" onBack={handleBack} />
       <section className="report-page__intro">
         {current ? (
@@ -73,34 +73,26 @@ function PracticeReport({ practiceId, recordingId }) {
 
         <div className="report-page__attempts">
           {attempts && attempts.length > 0 && (
-            <AttemptTabs attempts={attempts} currentId={recordingId} onSelect={handleSelect} />
+            <AttemptTabs
+              attempts={attempts}
+              currentId={recordingId}
+              details={durations}
+              onSelect={handleSelect}
+            />
           )}
         </div>
-
-        <p className="report-page__meta font-13-regular">
-          {recordedAt && formatRecordedAt(recordedAt)}
-          {currentReport && (
-            <>
-              <span aria-hidden="true">·</span>
-              {formatDuration(currentReport.duration_ms)}
-            </>
-          )}
-        </p>
       </section>
-    </>
-  );
 
-  return (
-    <Report
-      key={recordingId}
-      recordingId={recordingId}
-      attempts={attempts}
-      chrome={chrome}
-      tab={tab}
-      onTabChange={setTab}
-      onReport={handleReport}
-      onBack={handleBack}
-    />
+      <Report
+        key={recordingId}
+        recordingId={recordingId}
+        attempts={attempts}
+        tab={tab}
+        onTabChange={setTab}
+        onReport={handleReport}
+        onBack={handleBack}
+      />
+    </div>
   );
 }
 
@@ -121,7 +113,7 @@ async function loadResult(recordingId, previousId, previousNo, signal) {
   };
 }
 
-function Report({ recordingId, attempts, chrome, tab, onTabChange, onReport, onBack }) {
+function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
   const { report, error: statusError, sawProgress, retry: retryStatus } = useReportStatus(recordingId);
   const [result, setResult] = useState(EMPTY_RESULT);
   const [resultRequest, setResultRequest] = useState(0);
@@ -162,7 +154,6 @@ function Report({ recordingId, attempts, chrome, tab, onTabChange, onReport, onB
   if (error) {
     return (
       <ReportNotice
-        chrome={chrome}
         title="결과를 불러오지 못했어요."
         description={getErrorMessage(error)}
         action="다시 불러오기"
@@ -174,7 +165,6 @@ function Report({ recordingId, attempts, chrome, tab, onTabChange, onReport, onB
   if (report?.status === "FAILED") {
     return (
       <ReportNotice
-        chrome={chrome}
         title="분석하지 못했어요."
         description={getFailureMessage(report.failure)}
         action="다시 분석하기"
@@ -187,13 +177,12 @@ function Report({ recordingId, attempts, chrome, tab, onTabChange, onReport, onB
     return <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />;
   }
 
-  return <ReportResult chrome={chrome} report={report} result={result} tab={tab} onTabChange={onTabChange} />;
+  return <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />;
 }
 
-function ReportNotice({ chrome, title, description, action, onAction }) {
+function ReportNotice({ title, description, action, onAction }) {
   return (
-    <div className="report-page">
-      {chrome}
+    <>
       <div className="report-page__notice" role="alert">
         <p className="font-18-semibold">{title}</p>
         <p className="font-14-regular">{description}</p>
@@ -201,11 +190,11 @@ function ReportNotice({ chrome, title, description, action, onAction }) {
       <div className="report-page__bottom">
         <GreenButton text={action} onClick={onAction} showArrow={false} />
       </div>
-    </div>
+    </>
   );
 }
 
-function ReportResult({ chrome, report, result, tab, onTabChange: setTab }) {
+function ReportResult({ report, result, tab, onTabChange: setTab }) {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const { overview, utterance, feedback, previous } = result;
@@ -223,8 +212,7 @@ function ReportResult({ chrome, report, result, tab, onTabChange: setTab }) {
   };
 
   return (
-    <div className="report-page" aria-busy={!isReady}>
-      {chrome}
+    <>
 
       <section className="report-page__summary">
         {isReady ? (
@@ -338,6 +326,6 @@ function ReportResult({ chrome, report, result, tab, onTabChange: setTab }) {
       >
         <UtteranceGuide />
       </BottomSheet>
-    </div>
+    </>
   );
 }

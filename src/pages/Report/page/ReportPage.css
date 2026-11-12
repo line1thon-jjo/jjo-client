@@ -20,16 +20,6 @@
   min-height: 38px;
 }
 
-.report-page__meta {
-  min-height: 1.3em;
-
-  display: flex;
-  gap: 6px;
-
-  margin: -6px 0 0;
-
-  color: #7a7a82;
-}
 
 .report-page__title {
   margin: 0;

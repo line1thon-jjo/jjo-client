@@ -46,6 +46,39 @@
   color: #ffffff;
 }
 
+.attempt-tabs__detail {
+  display: grid;
+  grid-template-columns: 0fr;
+
+  margin-left: -6px;
+
+  transition:
+    grid-template-columns var(--duration-slow) var(--ease-standard),
+    margin-left var(--duration-slow) var(--ease-standard);
+}
+
+.attempt-tabs__detail-text {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #d9f768;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.attempt-tabs__detail[data-visible] {
+  grid-template-columns: 1fr;
+  margin-left: 0;
+}
+
+.attempt-tabs__detail[data-visible] .attempt-tabs__detail-text {
+  opacity: 1;
+  transition-delay: 80ms;
+}
+
 .attempt-tabs__status {
   width: 6px;
   height: 6px;
