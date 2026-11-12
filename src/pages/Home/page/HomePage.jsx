@@ -1,120 +1,77 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
+import AddButton from "@/pages/Home/components/AddButton";
+import PracticeRow from "@/pages/Home/components/PracticeRow";
+import { usePracticeList } from "@/pages/Home/hooks/usePracticeList";
+import { greetingFor } from "@/pages/Home/lib/greeting";
 import { getErrorMessage } from "@/api/messages";
-import { listPractices } from "@/api/practices";
-import { getAttempts } from "@/api/reports";
-
-import PracticeCard from "../components/PracticeCard";
-import AddButton from "../components/AddButton";
-import { formatRelativeTime } from "../lib/formatRelativeTime";
+import { useAuth } from "@/auth/useAuth";
 
 import "./HomePage.css";
 
-function findLatestAttempt(attempts) {
-  return attempts.reduce(
-    (latest, attempt) => (!latest || attempt.attempt_no > latest.attempt_no ? attempt : latest),
-    null,
-  );
-}
+const SKELETON_ROWS = [0, 1, 2, 3];
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { entries, error, retry } = usePracticeList();
+  const [openId, setOpenId] = useState();
 
-  const [practices, setPractices] = useState(null);
-  const [error, setError] = useState(null);
-  const [reloadKey, setReloadKey] = useState(0);
-  const [openingId, setOpeningId] = useState(null);
+  const currentOpenId = openId === undefined ? entries?.[0]?.practice.id : openId;
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    listPractices({ signal: controller.signal })
-      .then((list) => {
-        setPractices(list);
-        setError(null);
-      })
-      .catch((loadError) => {
-        if (controller.signal.aborted) return;
-        setError(getErrorMessage(loadError));
-      });
-
-    return () => controller.abort();
-  }, [reloadKey]);
-
-  const handleReload = () => {
-    setError(null);
-    setPractices(null);
-    setReloadKey((key) => key + 1);
-  };
-
-  const handleAddPractice = () => {
-    navigate("/script");
-  };
-
-  // 최신 회차 결과로 이동. 녹음이 아직 없으면 녹음 화면으로 이동
-  const handleOpenPractice = async (practice) => {
-    if (openingId !== null) return;
-
-    setOpeningId(practice.id);
-
-    try {
-      const { attempts } = await getAttempts(practice.id);
-      const latest = findLatestAttempt(attempts);
-
-      if (latest) {
-        navigate(`/practices/${practice.id}/reports/${latest.recording_id}`);
-      } else {
-        navigate("/record", {
-          state: { title: practice.title, script: practice.script, practiceId: practice.id },
-        });
-      }
-    } catch (openError) {
-      alert(getErrorMessage(openError));
-      setOpeningId(null);
-    }
-  };
-
-  const leftCards = practices?.filter((_, index) => index % 2 === 0) ?? [];
-  const rightCards = practices?.filter((_, index) => index % 2 !== 0) ?? [];
-
-  const renderCard = (practice) => (
-    <PracticeCard
-      key={practice.id}
-      title={practice.title}
-      content={practice.script}
-      time={formatRelativeTime(practice.created_at)}
-      onClick={() => handleOpenPractice(practice)}
-    />
-  );
+  const handleAddPractice = () => navigate("/script");
+  const handleRecord = (practice) =>
+    navigate("/record", { state: { title: practice.title, script: practice.script, practiceId: practice.id } });
+  const handleOpenReport = ({ practice, latest }) => navigate(`/practices/${practice.id}/reports/${latest.recording_id}`);
+  const handleToggle = (id) => setOpenId(id === currentOpenId ? null : id);
 
   return (
     <div className="home-page">
       <Header />
 
       <main className="home-page__main">
-        {error && (
-          <div className="home-page__message">
-            <p>{error}</p>
-            <button type="button" className="home-page__retry" onClick={handleReload}>
+        <h1 className="home-page__hello font-26-regular">
+          {greetingFor()},
+          <strong className="font-26-bold">{user.name}님</strong>
+        </h1>
+
+        {error ? (
+          <div className="home-page__notice" role="alert">
+            <p className="font-16-semibold">연습 목록을 불러오지 못했어요.</p>
+            <p className="font-14-regular">{getErrorMessage(error)}</p>
+            <button type="button" className="home-page__retry font-14-semibold" onClick={retry}>
               다시 불러오기
             </button>
           </div>
-        )}
-
-        {!error && practices?.length === 0 && (
-          <div className="home-page__message">
-            <p>아직 연습이 없어요.</p>
-            <p>+ 버튼을 눌러 첫 발표를 연습해보세요.</p>
+        ) : !entries ? (
+          <ul className="home-page__list" aria-busy="true">
+            {SKELETON_ROWS.map((row) => (
+              <li key={row} className="home-page__skeleton-row">
+                <span className="home-page__skeleton" style={{ width: "56%", height: 22 }} />
+                <span className="home-page__skeleton" style={{ width: "32%" }} />
+              </li>
+            ))}
+          </ul>
+        ) : entries.length === 0 ? (
+          <div className="home-page__notice">
+            <p className="font-16-semibold">아직 연습이 없어요.</p>
+            <p className="font-14-regular">오른쪽 아래 + 버튼으로 첫 대본을 넣어 보세요.</p>
           </div>
-        )}
-
-        {!error && practices?.length > 0 && (
-          <div className="home-page__grid">
-            <div className="home-page__column">{leftCards.map(renderCard)}</div>
-            <div className="home-page__column home-page__column--right">{rightCards.map(renderCard)}</div>
-          </div>
+        ) : (
+          <ul className="home-page__list">
+            {entries.map((entry) => (
+              <PracticeRow
+                key={entry.practice.id}
+                entry={entry}
+                isOpen={entry.practice.id === currentOpenId}
+                onToggle={handleToggle}
+                onRecord={handleRecord}
+                onOpenReport={handleOpenReport}
+              />
+            ))}
+          </ul>
         )}
       </main>
 
