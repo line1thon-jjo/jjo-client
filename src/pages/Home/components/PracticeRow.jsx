@@ -67,7 +67,7 @@ export default function PracticeRow({ entry, isOpen, onToggle, onRecord, onOpenR
 
           <div className="practice-row__actions">
             {latest ? (
-              <GreenButton text="코치 받기" onClick={() => onOpenReport(entry)} />
+              <GreenButton text="이어서 연습하기" onClick={() => onOpenReport(entry)} />
             ) : (
               <GreenButton text="녹음 시작하기" onClick={() => onRecord(practice)} />
             )}
