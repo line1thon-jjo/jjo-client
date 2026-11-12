@@ -1,41 +1,34 @@
 import { HABITS } from "@/constants/report";
 
-function habitCounts(overview) {
-  return Object.fromEntries(overview.habits.map(({ type, count }) => [type, count]));
-}
-
-export function compareHabits(current, previous) {
-  const now = habitCounts(current);
-  const before = previous ? habitCounts(previous) : {};
-  const types = [...new Set([...Object.keys(now), ...Object.keys(before)])];
-
-  return types
-    .map((type) => ({
-      type,
-      ...HABITS[type],
-      count: now[type] ?? 0,
-      previous: previous ? (before[type] ?? 0) : null,
-    }))
-    .sort((a, b) => b.count - a.count || (b.previous ?? 0) - (a.previous ?? 0));
-}
-
-export function summarizeChanges(current, previous) {
-  if (!previous) return [];
-
-  const speedChanges = [
-    { id: "fast", label: "빠른 구절", unit: "곳", before: previous.speed.fast, after: current.speed.fast },
-    { id: "slow", label: "느린 구절", unit: "곳", before: previous.speed.slow, after: current.speed.slow },
+function metricsOf(overview) {
+  return [
+    { id: "fast", label: "빠른 구절", unit: "곳", value: overview.speed.fast },
+    { id: "slow", label: "느린 구절", unit: "곳", value: overview.speed.slow },
+    ...overview.habits.map(({ type, count }) => ({ id: type, label: HABITS[type].label, unit: "회", value: count })),
   ];
+}
 
-  const habitChanges = compareHabits(current, previous).map(({ type, label, count, previous: before }) => ({
-    id: type,
-    label,
-    unit: "회",
-    before,
-    after: count,
-  }));
+export function pickHighlights(current, previous, limit = 3) {
+  const now = metricsOf(current);
 
-  return [...speedChanges, ...habitChanges]
-    .filter(({ before, after }) => before !== after)
-    .sort((a, b) => Math.abs(b.after - b.before) - Math.abs(a.after - a.before));
+  if (!previous) {
+    const habitTotal = current.habits.reduce((sum, { count }) => sum + count, 0);
+    return [
+      { id: "fast", label: "빠른 구절", unit: "곳", before: null, after: current.speed.fast },
+      { id: "slow", label: "느린 구절", unit: "곳", before: null, after: current.speed.slow },
+      { id: "habits", label: "반복된 습관", unit: "회", before: null, after: habitTotal },
+    ].slice(0, limit);
+  }
+
+  const before = Object.fromEntries(metricsOf(previous).map(({ id, value }) => [id, value]));
+  const merged = new Map(now.map((metric) => [metric.id, metric]));
+  metricsOf(previous).forEach((metric) => {
+    if (!merged.has(metric.id)) merged.set(metric.id, { ...metric, value: 0 });
+  });
+
+  return [...merged.values()]
+    .map(({ value, ...metric }) => ({ ...metric, before: before[metric.id] ?? 0, after: value }))
+    .filter(({ before: previousValue, after }) => previousValue > 0 || after > 0)
+    .sort((a, b) => Math.abs(b.after - b.before) - Math.abs(a.after - a.before) || b.after - a.after)
+    .slice(0, limit);
 }

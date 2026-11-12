@@ -5,7 +5,7 @@ import chevronIcon from "@/assets/icons/chevron-right.svg";
 import "./FeedbackList.css";
 
 function FeedbackItem({ item, onPlay }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(item.rank === 1);
   const isPriority = item.rank === 1;
   const bodyId = `feedback-body-${item.rank}`;
 

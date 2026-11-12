@@ -6,8 +6,7 @@ import GreenButton from "@/components/Button/GreenButton";
 import Header from "@/components/Header/Header";
 import AnalyzingScreen from "@/pages/Report/components/AnalyzingScreen";
 import AttemptTabs from "@/pages/Report/components/AttemptTabs";
-import FeedbackList from "@/pages/Report/components/FeedbackList";
-import OverviewPanel from "@/pages/Report/components/OverviewPanel";
+import SummaryPanel from "@/pages/Report/components/SummaryPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
@@ -215,7 +214,6 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
 
   const { overview, utterance, feedback, previous } = result;
   const isReady = Boolean(overview);
-  const feedbackCount = feedback?.items.length ?? 0;
   const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
   const warnings = (report?.warnings ?? []).filter((code) => REPORT_WARNINGS[code]);
 
@@ -229,7 +227,6 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
 
   return (
     <>
-
       <section className="report-page__summary">
         {isReady ? (
           <p className="report-page__headline font-22-regular">
@@ -263,15 +260,6 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
             onClick={() => setTab(id)}
           >
             {label}
-            {id === "feedback" && (
-              <span
-                className="report-page__badge"
-                data-visible={feedbackCount > 0 || undefined}
-                aria-hidden={feedbackCount === 0}
-              >
-                {feedbackCount}
-              </span>
-            )}
           </button>
         ))}
         <span className="report-page__indicator" aria-hidden="true" />
@@ -279,29 +267,25 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
 
       <main className="report-page__body">
         <section
-          id="report-panel-overview"
+          id="report-panel-summary"
           role="tabpanel"
-          aria-labelledby="report-tab-overview"
+          aria-labelledby="report-tab-summary"
           className="report-page__panel"
-          hidden={tab !== "overview"}
+          hidden={tab !== "summary"}
         >
           {isReady ? (
-            <OverviewPanel
-              overview={overview}
-              previousOverview={previous?.overview ?? null}
-              previousAttemptNo={previous?.attemptNo ?? null}
-            />
+            <SummaryPanel overview={overview} previous={previous} feedback={feedback} />
           ) : (
             <div className="report-page__loading" />
           )}
         </section>
 
         <section
-          id="report-panel-utterance"
+          id="report-panel-detail"
           role="tabpanel"
-          aria-labelledby="report-tab-utterance"
+          aria-labelledby="report-tab-detail"
           className="report-page__panel"
-          hidden={tab !== "utterance"}
+          hidden={tab !== "detail"}
         >
           {utterance ? (
             <>
@@ -311,6 +295,10 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
                 </p>
               ))}
               <div className="report-page__toolbar">
+                <p className="report-page__pace font-13-medium">
+                  <span data-pace="FAST">빠른 구절 {overview.speed.fast}곳</span>
+                  <span data-pace="SLOW">느린 구절 {overview.speed.slow}곳</span>
+                </p>
                 <button type="button" className="report-page__info font-13-medium" onClick={() => setIsGuideOpen(true)}>
                   <img src={infoIcon} alt="" />
                   보는 법
@@ -321,16 +309,6 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
           ) : (
             <div className="report-page__loading" />
           )}
-        </section>
-
-        <section
-          id="report-panel-feedback"
-          role="tabpanel"
-          aria-labelledby="report-tab-feedback"
-          className="report-page__panel"
-          hidden={tab !== "feedback"}
-        >
-          {feedback ? <FeedbackList items={feedback.items} /> : <div className="report-page__loading" />}
         </section>
       </main>
 
