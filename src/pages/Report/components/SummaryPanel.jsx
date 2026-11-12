@@ -66,7 +66,7 @@ export default function SummaryPanel({ overview, previous, feedback, onFocusPace
     <div className="summary-panel">
       <section className="summary-panel__section" aria-labelledby="summary-next-title">
         <h2 id="summary-next-title" className="summary-panel__heading font-17-semibold">
-          다음 연습에서는
+          연습 포인트
         </h2>
         <FeedbackList items={feedback.items} />
       </section>
