@@ -2,33 +2,24 @@ import { HABITS } from "@/constants/report";
 
 function metricsOf(overview) {
   return [
-    { id: "fast", label: "빠른 구절", unit: "곳", value: overview.speed.fast },
-    { id: "slow", label: "느린 구절", unit: "곳", value: overview.speed.slow },
-    ...overview.habits.map(({ type, count }) => ({ id: type, label: HABITS[type], unit: "회", value: count })),
+    { id: "fast", label: "빠른 구절", unit: "곳", pace: "FAST", value: overview.speed.fast },
+    { id: "slow", label: "느린 구절", unit: "곳", pace: "SLOW", value: overview.speed.slow },
+    ...overview.habits.map(({ type, count }) => ({ id: type, label: HABITS[type], unit: "회", pace: null, value: count })),
   ];
 }
 
-export function pickHighlights(current, previous, limit = 3) {
-  const now = metricsOf(current);
+export function buildHabitRows(current, previous) {
+  const rows = new Map(metricsOf(current).map(({ value, ...metric }) => [metric.id, { ...metric, after: value }]));
+  const before = previous ? Object.fromEntries(metricsOf(previous).map(({ id, value }) => [id, value])) : {};
 
-  if (!previous) {
-    const habitTotal = current.habits.reduce((sum, { count }) => sum + count, 0);
-    return [
-      { id: "fast", label: "빠른 구절", unit: "곳", before: null, after: current.speed.fast },
-      { id: "slow", label: "느린 구절", unit: "곳", before: null, after: current.speed.slow },
-      { id: "habits", label: "반복된 습관", unit: "회", before: null, after: habitTotal },
-    ].slice(0, limit);
+  if (previous) {
+    metricsOf(previous).forEach((metric) => {
+      if (!rows.has(metric.id)) rows.set(metric.id, { ...metric, value: undefined, after: 0 });
+    });
   }
 
-  const before = Object.fromEntries(metricsOf(previous).map(({ id, value }) => [id, value]));
-  const merged = new Map(now.map((metric) => [metric.id, metric]));
-  metricsOf(previous).forEach((metric) => {
-    if (!merged.has(metric.id)) merged.set(metric.id, { ...metric, value: 0 });
-  });
-
-  return [...merged.values()]
-    .map(({ value, ...metric }) => ({ ...metric, before: before[metric.id] ?? 0, after: value }))
-    .filter(({ before: previousValue, after }) => previousValue > 0 || after > 0)
-    .sort((a, b) => Math.abs(b.after - b.before) - Math.abs(a.after - a.before) || b.after - a.after)
-    .slice(0, limit);
+  return [...rows.values()]
+    .map((row) => ({ ...row, before: previous ? (before[row.id] ?? 0) : null }))
+    .filter(({ before: previousValue, after }) => after > 0 || previousValue > 0)
+    .sort((a, b) => b.after - a.after || (b.before ?? 0) - (a.before ?? 0));
 }

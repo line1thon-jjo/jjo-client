@@ -32,6 +32,4 @@ export const HABITS = {
   NO_BREAK: "이어 말하기",
 };
 
-export const HABITS_PREVIEW_COUNT = 2;
-
 export const ATTEMPT_ORDINALS = ["첫", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];

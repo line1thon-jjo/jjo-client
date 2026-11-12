@@ -46,7 +46,13 @@
 
   transition:
     background-color var(--duration-slow) var(--ease-standard),
-    background-size 120ms linear var(--delay);
+    background-size 120ms linear var(--delay),
+    opacity var(--duration-slow) var(--ease-standard);
+}
+
+.utterance[data-focus-pace="FAST"] .glyph:not([data-pace="FAST"]),
+.utterance[data-focus-pace="SLOW"] .glyph:not([data-pace="SLOW"]) {
+  opacity: 0.22;
 }
 
 .glyph[data-pace="FAST"] {

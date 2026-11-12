@@ -212,6 +212,7 @@ function ReportNotice({ title, description, action, onAction }) {
 function ReportResult({ report, result, tab, onTabChange }) {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [visitedTabs, setVisitedTabs] = useState(() => [tab]);
+  const [focusPace, setFocusPace] = useState(null);
 
   const setTab = (next) => {
     onTabChange(next);
@@ -222,6 +223,23 @@ function ReportResult({ report, result, tab, onTabChange }) {
   const isReady = Boolean(overview);
   const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
   const warnings = (report?.warnings ?? []).filter((code) => REPORT_WARNINGS[code]);
+
+  const handleFocusPace = (pace) => {
+    setFocusPace(pace);
+    setTab("detail");
+  };
+
+  const handleTogglePace = (pace) => setFocusPace((current) => (current === pace ? null : pace));
+
+  useEffect(() => {
+    if (!focusPace || tab !== "detail") return;
+    const frame = requestAnimationFrame(() => {
+      document
+        .querySelector(`#report-panel-detail .glyph[data-pace="${focusPace}"]`)
+        ?.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusPace, tab]);
 
   const handleTabKeyDown = (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -280,7 +298,7 @@ function ReportResult({ report, result, tab, onTabChange }) {
           hidden={tab !== "summary"}
         >
           {isReady ? (
-            <SummaryPanel overview={overview} previous={previous} feedback={feedback} />
+            <SummaryPanel overview={overview} previous={previous} feedback={feedback} onFocusPace={handleFocusPace} />
           ) : (
             <div className="report-page__loading" />
           )}
@@ -301,16 +319,30 @@ function ReportResult({ report, result, tab, onTabChange }) {
                 </p>
               ))}
               <div className="report-page__toolbar">
-                <p className="report-page__pace font-14-medium">
-                  <span data-pace="FAST">빠른 구절 {overview.speed.fast}곳</span>
-                  <span data-pace="SLOW">느린 구절 {overview.speed.slow}곳</span>
-                </p>
+                <div className="report-page__pace" role="group" aria-label="구간 강조">
+                  {[
+                    { pace: "FAST", label: "빠른 구절", count: overview.speed.fast },
+                    { pace: "SLOW", label: "느린 구절", count: overview.speed.slow },
+                  ].map(({ pace, label, count }) => (
+                    <button
+                      key={pace}
+                      type="button"
+                      className="report-page__pace-button font-14-medium"
+                      data-pace={pace}
+                      aria-pressed={focusPace === pace}
+                      disabled={count === 0}
+                      onClick={() => handleTogglePace(pace)}
+                    >
+                      {label} {count}곳
+                    </button>
+                  ))}
+                </div>
                 <button type="button" className="report-page__info font-14-medium" onClick={() => setIsGuideOpen(true)}>
                   <img src={infoIcon} alt="" />
                   보는 법
                 </button>
               </div>
-              <UtteranceText utterance={utterance} />
+              <UtteranceText utterance={utterance} focusPace={focusPace} />
             </>
           ) : (
             <div className="report-page__loading" />
