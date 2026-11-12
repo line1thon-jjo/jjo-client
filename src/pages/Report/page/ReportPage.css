@@ -137,8 +137,6 @@
   gap: 20px;
 
   padding: 20px 20px 64px;
-
-  background: radial-gradient(ellipse 80% 40% at 90% 30%, rgba(217, 247, 104, 0.28), rgba(217, 247, 104, 0) 70%);
 }
 
 .report-page__loading {
