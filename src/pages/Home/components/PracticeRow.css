@@ -182,13 +182,6 @@
   padding-top: 20px;
 }
 
-.practice-row__report {
-  padding: 16px 0 2px;
-  border: none;
-
-  background: none;
-  color: #3f3f46;
-}
 
 @keyframes practice-row-shimmer {
   to {
