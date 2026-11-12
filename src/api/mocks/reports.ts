@@ -1,4 +1,5 @@
 import { ApiError } from "@/api/errors";
+import { demoId } from "@/api/demo";
 import { MOCK_PRACTICES } from "@/api/mocks/practices";
 import { synthUtterance } from "@/api/mocks/synthUtterance";
 import { MOCK_UTTERANCE } from "@/api/mocks/utterance";
@@ -115,8 +116,8 @@ function completed(practiceId: number, attemptNo: number, hours: number, headlin
 }
 
 const MOCK_RECORDINGS: Record<string, MockRecording> = {
-  1: {
-    practice_id: 1,
+  [demoId(1)]: {
+    practice_id: demoId(1),
     attempt_no: 1,
     recorded_at: hoursAgo(26),
     duration_ms: 53000,
@@ -132,8 +133,8 @@ const MOCK_RECORDINGS: Record<string, MockRecording> = {
     },
     feedback: ranked([RISE_FEEDBACK, PACE_FEEDBACK, STRETCH_FEEDBACK]),
   },
-  2: {
-    practice_id: 1,
+  [demoId(2)]: {
+    practice_id: demoId(1),
     attempt_no: 2,
     recorded_at: hoursAgo(2),
     duration_ms: 61000,
@@ -149,8 +150,8 @@ const MOCK_RECORDINGS: Record<string, MockRecording> = {
     },
     feedback: ranked([PACE_FEEDBACK, STRETCH_FEEDBACK]),
   },
-  3: {
-    practice_id: 1,
+  [demoId(3)]: {
+    practice_id: demoId(1),
     attempt_no: 3,
     recorded_at: hoursAgo(0.05),
     duration_ms: 58000,
@@ -163,22 +164,22 @@ const MOCK_RECORDINGS: Record<string, MockRecording> = {
     },
     feedback: ranked([STRETCH_FEEDBACK]),
   },
-  4: {
-    practice_id: 2,
+  [demoId(4)]: {
+    practice_id: demoId(2),
     attempt_no: 1,
     recorded_at: hoursAgo(5),
     duration_ms: 4000,
     outcome: "FAILED",
     failure: { code: "NO_SPEECH" },
   },
-  5: completed(4, 1, 30, "근거를 말할 때 빨라졌어요.", "숫자가 나오는 문장은 한 박자 쉬고 말해 보세요."),
-  6: completed(4, 2, 27, "속도가 한결 차분해졌어요.", "문장 끝만 조금 더 내려 주세요."),
-  7: completed(5, 1, 50, "짧지만 힘 있게 들렸어요.", "마지막 ‘위하여’ 앞에서 잠깐 멈춰 보세요."),
-  8: completed(6, 1, 150, "질문으로 시작한 첫 문장이 좋았어요.", "가격 이야기에서 빨라지지 않게 해 보세요."),
-  9: completed(6, 2, 148, "가격 부분이 차분해졌어요.", "불빛 설명을 조금 더 또렷하게 말해 보세요."),
-  10: completed(6, 3, 125, "전체 흐름이 자연스러워요.", "마지막 문장에 힘을 실어 보세요."),
-  11: completed(6, 4, 100, "거의 다 왔어요.", "첫 질문 뒤에 쉼을 조금 더 길게 두세요."),
-  12: completed(8, 1, 215, "설명이 정확하게 전달됐어요.", "용어가 나올 때 속도를 늦춰 보세요."),
+  [demoId(5)]: completed(demoId(4), 1, 30, "근거를 말할 때 빨라졌어요.", "숫자가 나오는 문장은 한 박자 쉬고 말해 보세요."),
+  [demoId(6)]: completed(demoId(4), 2, 27, "속도가 한결 차분해졌어요.", "문장 끝만 조금 더 내려 주세요."),
+  [demoId(7)]: completed(demoId(5), 1, 50, "짧지만 힘 있게 들렸어요.", "마지막 ‘위하여’ 앞에서 잠깐 멈춰 보세요."),
+  [demoId(8)]: completed(demoId(6), 1, 150, "질문으로 시작한 첫 문장이 좋았어요.", "가격 이야기에서 빨라지지 않게 해 보세요."),
+  [demoId(9)]: completed(demoId(6), 2, 148, "가격 부분이 차분해졌어요.", "불빛 설명을 조금 더 또렷하게 말해 보세요."),
+  [demoId(10)]: completed(demoId(6), 3, 125, "전체 흐름이 자연스러워요.", "마지막 문장에 힘을 실어 보세요."),
+  [demoId(11)]: completed(demoId(6), 4, 100, "거의 다 왔어요.", "첫 질문 뒤에 쉼을 조금 더 길게 두세요."),
+  [demoId(12)]: completed(demoId(8), 1, 215, "설명이 정확하게 전달됐어요.", "용어가 나올 때 속도를 늦춰 보세요."),
 };
 
 const analysisStartedAt: Record<string, number> = {};
@@ -255,7 +256,7 @@ export async function getOverview(recordingId: RecordingId) {
 
 export async function getUtterance(recordingId: RecordingId) {
   const recording = await completedRecording(recordingId);
-  return recording.practice_id === 1 ? MOCK_UTTERANCE : synthUtterance(practiceScript(recording.practice_id));
+  return recording.practice_id === demoId(1) ? MOCK_UTTERANCE : synthUtterance(practiceScript(recording.practice_id));
 }
 
 export async function getFeedback(recordingId: RecordingId) {

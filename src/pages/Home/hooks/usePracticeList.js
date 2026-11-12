@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { listPractices } from "@/api/practices";
 import { getAttempts } from "@/api/reports";
 import { findPreviousAttempt } from "@/pages/Report/lib/attempts";
+import { useDemoMode } from "@/hooks/useDemoMode";
 
 function newest(attempts) {
   return attempts.reduce(
@@ -40,6 +41,7 @@ async function loadPractices(signal) {
 export function usePracticeList() {
   const [state, setState] = useState({ entries: null, error: null });
   const [request, setRequest] = useState(0);
+  const isDemo = useDemoMode();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -53,7 +55,7 @@ export function usePracticeList() {
       });
 
     return () => controller.abort();
-  }, [request]);
+  }, [request, isDemo]);
 
   const retry = () => {
     setState({ entries: null, error: null });

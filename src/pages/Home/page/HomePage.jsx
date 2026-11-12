@@ -6,6 +6,7 @@ import AddButton from "@/pages/Home/components/AddButton";
 import PracticeRow from "@/pages/Home/components/PracticeRow";
 import { usePracticeList } from "@/pages/Home/hooks/usePracticeList";
 import { greetingFor } from "@/pages/Home/lib/greeting";
+import { isDemoId } from "@/api/demo";
 import { getErrorMessage } from "@/api/messages";
 import { useAuth } from "@/auth/useAuth";
 
@@ -23,7 +24,9 @@ export default function HomePage() {
 
   const handleAddPractice = () => navigate("/script");
   const handleRecord = (practice) =>
-    navigate("/record", { state: { title: practice.title, script: practice.script, practiceId: practice.id } });
+    navigate("/record", {
+      state: { title: practice.title, script: practice.script, practiceId: isDemoId(practice.id) ? undefined : practice.id },
+    });
   const handleOpenReport = ({ practice, latest }) => navigate(`/practices/${practice.id}/reports/${latest.recording_id}`);
   const handleToggle = (id) => setOpenId(id === currentOpenId ? null : id);
 

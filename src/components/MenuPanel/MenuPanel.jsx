@@ -4,7 +4,10 @@ import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import GreenButton from "@/components/Button/GreenButton";
 import TermsContent from "@/pages/Terms/components/TermsContent";
 import { TERMS } from "@/pages/Terms/data/terms";
+import { USE_MOCK } from "@/api/client";
+import { setDemoMode } from "@/api/demo";
 import { getErrorMessage } from "@/api/messages";
+import { useDemoMode } from "@/hooks/useDemoMode";
 import { useAuth } from "@/auth/useAuth";
 import { MENU_LEAVE_MS } from "@/constants/menu";
 
@@ -16,6 +19,7 @@ const DOCUMENTS = TERMS.filter((term) => term.required);
 
 export default function MenuPanel({ open, onClose, onLeave }) {
   const { user, logout, withdraw } = useAuth();
+  const isDemo = useDemoMode();
   const [isRendered, setIsRendered] = useState(open);
   const [openTermId, setOpenTermId] = useState(null);
   const [lastTermId, setLastTermId] = useState(null);
@@ -123,6 +127,20 @@ export default function MenuPanel({ open, onClose, onLeave }) {
           </section>
 
           <ul className="menu-panel__list">
+            {!USE_MOCK && (
+              <li>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isDemo}
+                  className="menu-panel__row font-16-medium"
+                  onClick={() => setDemoMode(!isDemo)}
+                >
+                  데모 모드
+                  <span className="menu-panel__switch" aria-hidden="true" />
+                </button>
+              </li>
+            )}
             {DOCUMENTS.map(({ id, label }) => (
               <li key={id}>
                 <button type="button" className="menu-panel__row font-16-medium" onClick={() => handleOpenTerm(id)}>
