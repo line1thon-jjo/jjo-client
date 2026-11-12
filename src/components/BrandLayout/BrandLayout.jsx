@@ -1,4 +1,4 @@
-import logo from "../../assets/images/jjo-logo-large.svg";
+import logo from "@/assets/images/jjo-logo-large.svg";
 
 import "./BrandLayout.css";
 

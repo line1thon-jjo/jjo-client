@@ -1,6 +1,6 @@
 #root {
   width: 100%;
-  max-width: 402px;
+  max-width: var(--app-width);
   min-height: 100dvh;
 
   margin: 0 auto;
@@ -8,7 +8,7 @@
   background-color: #fafafa;
 }
 
-@media (min-width: 403px) {
+@media (min-width: 403px) and (hover: hover) and (pointer: fine) {
   #root {
     box-shadow:
       0 0 0 1px rgba(9, 9, 11, 0.03),

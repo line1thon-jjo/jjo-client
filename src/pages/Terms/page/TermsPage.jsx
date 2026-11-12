@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BottomSheet from "../../../components/BottomSheet/BottomSheet";
-import BrandLayout from "../../../components/BrandLayout/BrandLayout";
-import GreenButton from "../../../components/Button/GreenButton";
-import TermsAgreement from "../components/TermsAgreement";
-import TermsContent from "../components/TermsContent";
-import { TERMS } from "../data/terms";
-import { NEXT_STEP_PATH } from "../../../auth/AuthContext";
-import { useAuth } from "../../../auth/useAuth";
+import BottomSheet from "@/components/BottomSheet/BottomSheet";
+import BrandLayout from "@/components/BrandLayout/BrandLayout";
+import GreenButton from "@/components/Button/GreenButton";
+import TermsAgreement from "@/pages/Terms/components/TermsAgreement";
+import TermsContent from "@/pages/Terms/components/TermsContent";
+import { TERMS } from "@/pages/Terms/data/terms";
+import { getErrorMessage } from "@/api/messages";
+import { NEXT_STEP_PATH } from "@/auth/AuthContext";
+import { useAuth } from "@/auth/useAuth";
 
 import "./TermsPage.css";
 
@@ -19,7 +20,7 @@ export default function TermsPage() {
   const [sheetTermId, setSheetTermId] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const canStart = TERMS.filter((term) => term.required).every((term) => agreements[term.id]);
   const sheetTerm = TERMS.find((term) => term.id === sheetTermId);
@@ -36,7 +37,7 @@ export default function TermsPage() {
 
   const handleStart = async () => {
     setIsSubmitting(true);
-    setHasError(false);
+    setErrorMessage(null);
 
     try {
       const nextStep = await signup({
@@ -45,8 +46,8 @@ export default function TermsPage() {
         marketing: Boolean(agreements.marketing),
       });
       navigate(NEXT_STEP_PATH[nextStep], { replace: true });
-    } catch {
-      setHasError(true);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, "가입하지 못했어요. 다시 시도해 주세요."));
       setIsSubmitting(false);
     }
   };
@@ -65,9 +66,9 @@ export default function TermsPage() {
         <TermsAgreement terms={TERMS} agreements={agreements} onChange={setAgreements} onOpenTerm={handleOpenTerm} />
       </div>
 
-      {hasError && (
+      {errorMessage && (
         <p className="terms-page__error font-14-medium" role="alert">
-          가입하지 못했어요. 다시 시도해 주세요.
+          {errorMessage}
         </p>
       )}
 

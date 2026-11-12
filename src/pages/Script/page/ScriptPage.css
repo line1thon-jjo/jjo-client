@@ -48,6 +48,10 @@
   margin-top: 35px;
 }
 
+.script-page__bottom .green-button {
+  font-size: 17px;
+}
+
 @media (max-height: 700px) {
   .script-page__main {
     padding-top: 20px;

@@ -22,13 +22,16 @@
   outline: none;
   resize: none;
 
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 160%;
   color: #515151;
 }
 
 .script-editor__textarea::placeholder {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
   color: #515151;
   opacity: 1;
 }
@@ -42,7 +45,8 @@
   align-items: center;
   justify-content: space-between;
 
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 400;
+  line-height: normal;
   color: #515151;
 }

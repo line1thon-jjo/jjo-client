@@ -1,0 +1,23 @@
+.app-splash {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 100;
+
+  width: min(100%, var(--app-width));
+
+  transform: translateX(-50%);
+}
+
+.app-splash[data-leaving] {
+  pointer-events: none;
+
+  animation: app-splash-leave var(--duration-slow) var(--ease-standard) forwards;
+}
+
+@keyframes app-splash-leave {
+  to {
+    opacity: 0;
+  }
+}

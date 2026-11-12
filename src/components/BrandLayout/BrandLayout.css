@@ -50,6 +50,12 @@
   color: #09090b;
 }
 
+.brand-layout__description {
+  margin: -48px 0 0;
+
+  color: #515151;
+}
+
 .brand-layout__bottom {
   position: sticky;
   bottom: 0;

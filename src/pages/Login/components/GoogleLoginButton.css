@@ -1,4 +1,6 @@
 .google-login-button {
+  position: relative;
+
   width: 100%;
   height: 53px;
 
@@ -26,11 +28,33 @@
   border-color: #c9c9c9;
 }
 
-.google-login-button:disabled {
+.google-login-button:disabled,
+.google-login-button[data-loading] {
   opacity: 0.6;
   cursor: progress;
 }
 
 .google-login-button__logo {
   display: block;
+}
+
+.google-login-button__face {
+  display: contents;
+}
+
+.google-login-button__overlay {
+  position: absolute;
+  inset: 0;
+
+  overflow: hidden;
+  opacity: 0;
+}
+
+.google-login-button[data-loading] .google-login-button__overlay {
+  pointer-events: none;
+}
+
+.google-login-button__slot {
+  transform: scale(var(--google-scale-x, 1), var(--google-scale-y, 1));
+  transform-origin: top left;
 }
