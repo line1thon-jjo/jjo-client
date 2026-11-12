@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import FeedbackList from "@/pages/Report/components/FeedbackList";
 import { HABITS, HABITS_PREVIEW_COUNT } from "@/constants/report";
-import { formatAttemptName } from "@/pages/Report/lib/attempts";
 import { pickHighlights } from "@/pages/Report/lib/compareOverview";
 
 import "./SummaryPanel.css";
@@ -65,8 +64,8 @@ function Highlights({ overview, previous }) {
 
   return (
     <section className="summary-panel__section" aria-labelledby="summary-highlights-title">
-      <h2 id="summary-highlights-title" className="summary-panel__eyebrow font-14-medium">
-        {previous ? `${formatAttemptName(previous.attemptNo)}과 비교` : "이번 연습"}
+      <h2 id="summary-highlights-title" className="summary-panel__heading font-17-semibold">
+        {previous ? "지난 연습 대비" : "이번 연습"}
       </h2>
 
       {highlights.length === 0 ? (
