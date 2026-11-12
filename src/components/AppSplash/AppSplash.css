@@ -5,7 +5,7 @@
   left: 50%;
   z-index: 100;
 
-  width: min(100%, 402px);
+  width: min(100%, var(--app-width));
 
   transform: translateX(-50%);
 }
