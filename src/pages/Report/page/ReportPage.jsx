@@ -296,16 +296,16 @@ function ReportResult({ report, result, tab, onTabChange }) {
           {utterance && visitedTabs.includes("detail") ? (
             <>
               {warnings.map((code) => (
-                <p key={code} className="report-page__warning font-13-regular line-height-150">
+                <p key={code} className="report-page__warning font-14-regular line-height-150">
                   {REPORT_WARNINGS[code]}
                 </p>
               ))}
               <div className="report-page__toolbar">
-                <p className="report-page__pace font-13-medium">
+                <p className="report-page__pace font-14-medium">
                   <span data-pace="FAST">빠른 구절 {overview.speed.fast}곳</span>
                   <span data-pace="SLOW">느린 구절 {overview.speed.slow}곳</span>
                 </p>
-                <button type="button" className="report-page__info font-13-medium" onClick={() => setIsGuideOpen(true)}>
+                <button type="button" className="report-page__info font-14-medium" onClick={() => setIsGuideOpen(true)}>
                   <img src={infoIcon} alt="" />
                   보는 법
                 </button>

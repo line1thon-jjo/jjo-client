@@ -16,7 +16,7 @@ function Trend({ before, after, unit, showsBefore }) {
     difference === 0 ? "변화 없음" : `${Math.abs(difference)}${unit} ${difference < 0 ? "줄었어요" : "늘었어요"}`;
 
   return (
-    <span className="summary-panel__trend font-13-semibold" data-trend={trend} aria-label={label}>
+    <span className="summary-panel__trend font-14-semibold" data-trend={trend} aria-label={label}>
       {showsBefore ? (
         `${before}${unit}에서`
       ) : (
@@ -47,7 +47,7 @@ function HighlightCard({ highlight, index }) {
         disabled={!canToggle}
         aria-pressed={canToggle ? showsBefore : undefined}
       >
-        <span className="summary-panel__card-label font-13-medium">{label}</span>
+        <span className="summary-panel__card-label font-14-medium">{label}</span>
         <span className="summary-panel__card-row">
           <span className="summary-panel__card-value font-24-bold">
             {after}

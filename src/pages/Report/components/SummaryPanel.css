@@ -30,7 +30,7 @@
 .summary-panel__cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 16px;
 
   margin: 0;
   padding: 0;
@@ -44,19 +44,16 @@
 
 .summary-panel__card-button {
   width: 100%;
-  height: 100%;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 4px;
 
-  padding: 14px 12px 14px 14px;
+  padding: 0;
   border: none;
-  border-radius: 14px;
 
-  background-color: #ffffff;
-  box-shadow: 0 0 0 1px rgba(9, 9, 11, 0.05);
+  background: none;
   color: #09090b;
   text-align: left;
 }
@@ -71,12 +68,9 @@
 }
 
 .summary-panel__card-row {
-  width: 100%;
-
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 4px;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .summary-panel__card-value {
@@ -86,27 +80,19 @@
 }
 
 .summary-panel__trend {
-  height: 22px;
-
   display: inline-flex;
   align-items: center;
   gap: 2px;
 
-  padding: 0 7px;
-  border-radius: 999px;
-
-  background-color: #f2f2f3;
-  color: #7a7a82;
+  color: #a1a1aa;
   white-space: nowrap;
 }
 
 .summary-panel__trend[data-trend="better"] {
-  background-color: rgba(100, 133, 8, 0.1);
-  color: #557206;
+  color: #648508;
 }
 
 .summary-panel__trend[data-trend="worse"] {
-  background-color: rgba(174, 63, 65, 0.1);
   color: #ae3f41;
 }
 
@@ -158,10 +144,6 @@
 .summary-panel__habit-count {
   flex-shrink: 0;
 
-  padding: 4px 10px;
-  border-radius: 999px;
-
-  background-color: #f2f3ef;
   color: #09090b;
 }
 
