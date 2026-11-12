@@ -117,22 +117,12 @@
   align-items: center;
   gap: 16px;
 
-  padding: 14px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #ececec;
-}
-
-.summary-panel__habit p {
-  margin: 0;
 }
 
 .summary-panel__habit-label {
   color: #09090b;
-}
-
-.summary-panel__habit-description {
-  margin-top: 2px;
-
-  color: #7a7a82;
 }
 
 .summary-panel__habit-count {

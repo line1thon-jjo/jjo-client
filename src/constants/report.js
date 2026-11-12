@@ -23,13 +23,13 @@ export const REPORT_WARNINGS = {
 };
 
 export const HABITS = {
-  END_RISE: { label: "끝 올림", description: "문장 끝에서 음높이가 올라갔어요." },
-  END_STRETCH: { label: "끝 늘임", description: "문장 끝 글자를 길게 끌었어요." },
-  END_FADE: { label: "끝 흐림", description: "문장 끝에서 목소리가 작아졌어요." },
-  MID_STRETCH: { label: "중간 늘임", description: "문장 중간에서 글자를 길게 늘였어요." },
-  MID_PAUSE: { label: "중간 쉼", description: "문장 중간에서 길게 쉬었어요." },
-  LONG_PAUSE: { label: "긴 쉼", description: "숨 고를 자리에서 평소보다 오래 쉬었어요." },
-  NO_BREAK: { label: "쉼 없이 잇기", description: "문장이 끝났는데 쉬지 않고 이어 말했어요." },
+  END_RISE: "끝 올림",
+  END_STRETCH: "끝 끌기",
+  END_FADE: "끝 흐림",
+  MID_STRETCH: "중간 늘임",
+  MID_PAUSE: "중간 쉼",
+  LONG_PAUSE: "긴 쉼",
+  NO_BREAK: "이어 말하기",
 };
 
 export const HABITS_PREVIEW_COUNT = 2;

@@ -4,7 +4,7 @@ function metricsOf(overview) {
   return [
     { id: "fast", label: "빠른 구절", unit: "곳", value: overview.speed.fast },
     { id: "slow", label: "느린 구절", unit: "곳", value: overview.speed.slow },
-    ...overview.habits.map(({ type, count }) => ({ id: type, label: HABITS[type].label, unit: "회", value: count })),
+    ...overview.habits.map(({ type, count }) => ({ id: type, label: HABITS[type], unit: "회", value: count })),
   ];
 }
 

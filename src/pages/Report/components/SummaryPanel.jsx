@@ -82,15 +82,10 @@ function Highlights({ overview, previous }) {
 }
 
 function HabitItem({ habit }) {
-  const { label, description } = HABITS[habit.type];
-
   return (
     <li className="summary-panel__habit">
-      <div>
-        <p className="summary-panel__habit-label font-16-semibold">{label}</p>
-        <p className="summary-panel__habit-description font-14-regular">{description}</p>
-      </div>
-      <span className="summary-panel__habit-count font-14-semibold">{habit.count}회</span>
+      <span className="summary-panel__habit-label font-16-medium">{HABITS[habit.type]}</span>
+      <span className="summary-panel__habit-count font-16-semibold">{habit.count}회</span>
     </li>
   );
 }
