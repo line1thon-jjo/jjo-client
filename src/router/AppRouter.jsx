@@ -11,6 +11,8 @@ import AppSplash from "@/components/AppSplash/AppSplash";
 import AuthProvider from "@/auth/AuthProvider";
 import MotionProvider from "@/lib/motion/MotionProvider";
 import { GuestOnly, RequireOnboarded, RequireSignup, RequireUser } from "@/auth/guards";
+import { collapseTo } from "@/lib/transition/revealFrom";
+import "@/lib/transition/revealFrom.css";
 
 import HomePage from "@/pages/Home/page/HomePage";
 import ScriptPage from "@/pages/Script/page/ScriptPage";
@@ -25,7 +27,7 @@ function ScriptRoute() {
 
   return (
     <ScriptPage
-      onBack={() => navigate("/")}
+      onBack={() => collapseTo(".add-button", () => navigate("/"))}
       onRecord={(practiceData) => navigate("/record", { state: practiceData })}
     />
   );
@@ -44,7 +46,11 @@ function RecordRoute() {
     <RecordPage
       title={practiceData.title}
       script={practiceData.script}
+      practiceId={practiceData.practiceId}
       onBack={() => navigate(-1)}
+      onUploaded={({ practiceId, recordingId }) =>
+        navigate(`/practices/${practiceId}/reports/${recordingId}`, { replace: true })
+      }
     />
   );
 }

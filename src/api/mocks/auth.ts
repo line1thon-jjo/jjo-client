@@ -14,7 +14,7 @@ const MOCK_TOKEN_TTL = 3600;
 
 const MOCK_USER = {
   id: 1,
-  name: "jjo 사용자",
+  name: "멋쟁이",
   email: "user@example.com",
   profile_image_url: null,
 };
@@ -102,4 +102,10 @@ export async function logout() {
   } catch {
     return;
   }
+}
+
+export async function withdraw() {
+  await wait();
+  currentAccount();
+  await logout();
 }

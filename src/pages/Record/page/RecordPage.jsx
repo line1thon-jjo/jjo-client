@@ -1,48 +1,77 @@
+import { useRef, useState } from "react";
 import { m } from "motion/react";
 
-import Header from "../../../components/Header/Header";
-import { EASE } from "../../../lib/motion/presets";
+import Header from "@/components/Header/Header";
+import { EASE } from "@/lib/motion/presets";
+import { getErrorMessage } from "@/api/messages";
+import { createPractice, uploadRecording } from "@/api/practices";
 
 import RecordBar from "../components/RecordBar";
 import useRecorder from "../hooks/useRecorder";
 
-import arrowRight from "../../../assets/icons/arrow-right.svg";
+import arrowRight from "@/assets/icons/arrow-right.svg";
 
 import "./RecordPage.css";
 
-// 대본 입력의 "녹음하기" 버튼(높이 53, 하단 54) → 녹음 바(높이 76, 하단 30)
+// 대본 입력의 "녹음하기" 버튼(높이 53) → 녹음 바(높이 76), 하단 30px 고정한 채 위로만 커짐
 const BUTTON_HEIGHT = 53;
 const BAR_HEIGHT = 76;
-const BUTTON_BOTTOM_GAP = 54;
-const BAR_BOTTOM_GAP = 30;
 
 const MORPH = { duration: 0.48, ease: EASE.standard };
 
 export default function RecordPage({
   title,
   script,
+  practiceId,
   onBack,
-  onComplete,
+  onUploaded,
 }) {
   const recorder = useRecorder();
   const { status, seconds, audioBlob, error } = recorder;
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+
+  // 업로드만 실패했을 때 다시 눌러도 연습이 또 생기지 않도록 기억
+  const practiceIdRef = useRef(practiceId ?? null);
+
   const handleBack = () => {
+    if (isUploading) return;
+
     recorder.reset();
     onBack?.();
   };
 
-  const handleConfirm = () => {
-    if (!audioBlob) return;
+  const handleRetry = () => {
+    setUploadError(null);
+    recorder.reset();
+  };
 
-    const recordingData = { title, script, audioBlob, durationSec: seconds };
+  const handleConfirm = async () => {
+    if (!audioBlob || isUploading) return;
 
-    if (onComplete) {
-      onComplete(recordingData);
-    } else {
-      console.log("분석 화면으로 전달할 데이터:", recordingData);
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      if (practiceIdRef.current == null) {
+        const practice = await createPractice(script);
+        practiceIdRef.current = practice.id;
+      }
+
+      const recording = await uploadRecording(practiceIdRef.current, audioBlob, seconds * 1000);
+
+      onUploaded?.({
+        practiceId: practiceIdRef.current,
+        recordingId: recording.recording_id,
+      });
+    } catch (uploadFailure) {
+      setUploadError(getErrorMessage(uploadFailure));
+      setIsUploading(false);
     }
   };
+
+  const message = uploadError ?? error;
 
   return (
     <div className="record-page">
@@ -54,18 +83,16 @@ export default function RecordPage({
       </main>
 
       <div className="record-page__bottom">
-        {error && <p className="record-page__error">{error}</p>}
+        {message && <p className="record-page__error">{message}</p>}
 
         <m.div
           className="record-page__bar"
           initial={{
             height: BUTTON_HEIGHT,
-            marginBottom: BUTTON_BOTTOM_GAP - BAR_BOTTOM_GAP,
             backgroundColor: "#d9f768",
           }}
           animate={{
             height: BAR_HEIGHT,
-            marginBottom: 0,
             backgroundColor: "#000000",
           }}
           transition={MORPH}
@@ -90,11 +117,12 @@ export default function RecordPage({
             <RecordBar
               status={status}
               seconds={seconds}
+              isBusy={isUploading}
               onStart={recorder.start}
               onPause={recorder.pause}
               onResume={recorder.resume}
               onStop={recorder.stop}
-              onRetry={recorder.reset}
+              onRetry={handleRetry}
               onConfirm={handleConfirm}
             />
           </m.div>

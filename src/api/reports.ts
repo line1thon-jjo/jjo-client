@@ -1,5 +1,6 @@
 import * as mock from "@/api/mocks/reports";
 import { request, resolveUrl, USE_MOCK } from "@/api/client";
+import { isDemoId } from "@/api/demo";
 import type {
   AttemptsResponse,
   AudioUrlResponse,
@@ -46,12 +47,19 @@ const server = {
   },
 };
 
-export const {
-  getAttempts,
-  startAnalysis,
-  getStatus,
-  getOverview,
-  getUtterance,
-  getFeedback,
-  getAudioUrl,
-}: typeof server = USE_MOCK ? mock : server;
+type Server = typeof server;
+
+function source(id: number | string) {
+  return USE_MOCK || isDemoId(id) ? mock : server;
+}
+
+export const getAttempts: Server["getAttempts"] = (practiceId, options) => source(practiceId).getAttempts(practiceId, options);
+export const startAnalysis: Server["startAnalysis"] = (recordingId, options) =>
+  source(recordingId).startAnalysis(recordingId, options);
+export const getStatus: Server["getStatus"] = (recordingId, options) => source(recordingId).getStatus(recordingId, options);
+export const getOverview: Server["getOverview"] = (recordingId, options) => source(recordingId).getOverview(recordingId, options);
+export const getUtterance: Server["getUtterance"] = (recordingId, options) =>
+  source(recordingId).getUtterance(recordingId, options);
+export const getFeedback: Server["getFeedback"] = (recordingId, options) => source(recordingId).getFeedback(recordingId, options);
+export const getAudioUrl: Server["getAudioUrl"] = (recordingId, options) =>
+  source(recordingId).getAudioUrl(recordingId, options);

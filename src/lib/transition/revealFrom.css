@@ -1,0 +1,39 @@
+.reveal-transition::view-transition-old(root),
+.collapse-transition::view-transition-new(root) {
+  animation: none;
+}
+
+.reveal-transition::view-transition-new(root) {
+  animation: reveal-from 520ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.collapse-transition::view-transition-old(root) {
+  z-index: 1;
+
+  animation: collapse-to 440ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes reveal-from {
+  from {
+    clip-path: circle(28px at var(--reveal-x) var(--reveal-y));
+  }
+
+  to {
+    clip-path: circle(150vmax at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+@keyframes collapse-to {
+  from {
+    clip-path: circle(150vmax at var(--reveal-x) var(--reveal-y));
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  to {
+    clip-path: circle(28px at var(--reveal-x) var(--reveal-y));
+    opacity: 0;
+  }
+}

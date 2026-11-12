@@ -8,6 +8,7 @@ export const ERROR_MESSAGES = {
   GOOGLE_VERIFICATION_UNAVAILABLE: "구글에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.",
   SIGNUP_CREDENTIAL_INVALID: "가입 시간이 지났어요. 다시 로그인해 주세요.",
   SIGNUP_ALREADY_COMPLETED: "이미 가입한 계정이에요. 다시 로그인해 주세요.",
+  ACCOUNT_DELETION_UNCONFIRMED: "탈퇴를 마치지 못했어요. 잠시 후 다시 시도해 주세요.",
   REQUIRED_AGREEMENT_MISSING: "필수 약관에 동의해 주세요.",
   PRACTICE_NOT_FOUND: "연습을 찾을 수 없어요.",
   RECORDING_NOT_FOUND: "녹음을 찾을 수 없어요.",
