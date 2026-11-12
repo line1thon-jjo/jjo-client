@@ -19,7 +19,6 @@ import TermsPage from "@/pages/Terms/page/TermsPage";
 import OnboardingPage from "@/pages/Onboarding/page/OnboardingPage";
 import ReportPage from "@/pages/Report/page/ReportPage";
 import RecordPage from "@/pages/Record/page/RecordPage";
-import SettingsPage from "@/pages/Settings/page/SettingsPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();
@@ -72,7 +71,6 @@ export default function AppRouter() {
                 <Route path="/script" element={<ScriptRoute />} />
                 <Route path="/record" element={<RecordRoute />} />
                 <Route path="/practices/:practiceId/reports/:recordingId" element={<ReportPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Route>
 

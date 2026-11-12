@@ -1,18 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+import MenuPanel from "@/components/MenuPanel/MenuPanel";
 
 import "./Header.css";
 
 import logo from "../../assets/images/jjo-logo.svg";
-import menuIcon from "../../assets/icons/menu-icon.svg";
 import arrowLeft from "../../assets/icons/arrow-left.svg";
 
 export default function Header({
   variant = "default",
   onBack,
   onMenuClick,
-  showMenu = true,
 }) {
-  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isBack = variant === "back";
 
   return (
@@ -38,20 +38,22 @@ export default function Header({
         />
       )}
 
-      {showMenu && (
-        <button
-          type="button"
-          className="header__button"
-          onClick={onMenuClick ?? (() => navigate("/settings"))}
-          aria-label="메뉴 열기"
-        >
-          <img
-            src={menuIcon}
-            alt=""
-            className="header__icon"
-          />
-        </button>
-      )}
+      <button
+        type="button"
+        className="header__button"
+        onClick={onMenuClick ?? (() => setIsMenuOpen((open) => !open))}
+        aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+        aria-expanded={isMenuOpen}
+        data-open={isMenuOpen || undefined}
+      >
+        <span className="header__burger" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
+      </button>
+
+      <MenuPanel open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </header>
   );
 }
