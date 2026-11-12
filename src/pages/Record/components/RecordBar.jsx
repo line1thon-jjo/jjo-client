@@ -49,12 +49,13 @@ function CheckIcon() {
   );
 }
 
-function CircleButton({ tone, label, onClick, children }) {
+function CircleButton({ tone, label, onClick, disabled = false, children }) {
   return (
     <button
       type="button"
       className={`record-bar__button record-bar__button--${tone}`}
       onClick={onClick}
+      disabled={disabled}
       aria-label={label}
     >
       {children}
@@ -65,6 +66,7 @@ function CircleButton({ tone, label, onClick, children }) {
 export default function RecordBar({
   status,
   seconds,
+  isBusy = false,
   onStart,
   onPause,
   onResume,
@@ -105,6 +107,7 @@ export default function RecordBar({
           </>
         )}
 
+        {/* TODO: 일시정지 상태 디자인 확인 필요 (임시 UI) */}
         {status === "paused" && (
           <>
             <CircleButton tone="dark" label="이어서 녹음" onClick={onResume}>
@@ -118,10 +121,10 @@ export default function RecordBar({
 
         {status === "done" && (
           <>
-            <CircleButton tone="dark" label="다시 녹음" onClick={onRetry}>
+            <CircleButton tone="dark" label="다시 녹음" onClick={onRetry} disabled={isBusy}>
               <img src={retryIcon} alt="" className="record-bar__icon" />
             </CircleButton>
-            <CircleButton tone="main" label="녹음 완료" onClick={onConfirm}>
+            <CircleButton tone="main" label="녹음 완료" onClick={onConfirm} disabled={isBusy}>
               <CheckIcon />
             </CircleButton>
           </>

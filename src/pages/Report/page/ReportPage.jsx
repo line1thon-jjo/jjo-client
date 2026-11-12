@@ -73,7 +73,8 @@ function PracticeReport({ practiceId, recordingId }) {
 
   const handleBack = () => navigate("/");
   const handleSelect = (id) => navigate(`/practices/${practiceId}/reports/${id}`, { replace: true });
-  const handleRecordAgain = () => navigate("/record", { state: { title: practice.title, script: practice.script } });
+  const handleRecordAgain = () =>
+    navigate("/record", { state: { title: practice.title, script: practice.script, practiceId: practice.id } });
 
   return (
     <div className="report-page">
