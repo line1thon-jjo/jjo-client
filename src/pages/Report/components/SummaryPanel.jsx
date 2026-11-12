@@ -60,7 +60,7 @@ function HabitRow({ row, onFocusPace }) {
 }
 
 export default function SummaryPanel({ overview, previous, feedback, onFocusPace }) {
-  const rows = buildHabitRows(overview, previous?.overview ?? null);
+  const rows = buildHabitRows(overview, previous);
 
   return (
     <div className="summary-panel">

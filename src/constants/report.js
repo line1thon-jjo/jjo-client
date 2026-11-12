@@ -31,5 +31,3 @@ export const HABITS = {
   LONG_PAUSE: "긴 쉼",
   NO_BREAK: "이어 말하기",
 };
-
-export const ATTEMPT_ORDINALS = ["첫", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];

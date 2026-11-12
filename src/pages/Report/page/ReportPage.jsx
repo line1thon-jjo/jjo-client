@@ -63,9 +63,11 @@ function PracticeReport({ practiceId, recordingId }) {
       saved[report.recording_id] ? saved : { ...saved, [report.recording_id]: formatDuration(report.duration_ms) },
     );
     setAttempts((list) =>
-      list?.map((attempt) =>
-        attempt.recording_id === report.recording_id ? { ...attempt, status: report.status } : attempt,
-      ),
+      list
+        ? list.map((attempt) =>
+            attempt.recording_id === report.recording_id ? { ...attempt, status: report.status } : attempt,
+          )
+        : list,
     );
   }, []);
 
@@ -113,7 +115,7 @@ function PracticeReport({ practiceId, recordingId }) {
   );
 }
 
-async function loadResult(recordingId, previousId, previousNo, signal) {
+async function loadResult(recordingId, previousId, signal) {
   const [overview, utterance, feedback, previousOverview] = await Promise.all([
     getOverview(recordingId, { signal }),
     getUtterance(recordingId, { signal }),
@@ -125,7 +127,7 @@ async function loadResult(recordingId, previousId, previousNo, signal) {
     overview,
     utterance,
     feedback,
-    previous: previousOverview && { attemptNo: previousNo, overview: previousOverview },
+    previous: previousOverview,
     error: null,
   };
 }
@@ -140,7 +142,6 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
   const isInProgress = REPORT_IN_PROGRESS.includes(report?.status);
   const previousAttempt = attempts && report ? findPreviousAttempt(attempts, report.attempt_no) : null;
   const previousId = previousAttempt?.recording_id ?? null;
-  const previousNo = previousAttempt?.attempt_no ?? null;
   const canLoad = isCompleted && attempts !== null;
 
   useEffect(() => {
@@ -151,14 +152,16 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
     if (!canLoad) return;
     const controller = new AbortController();
 
-    loadResult(recordingId, previousId, previousNo, controller.signal)
-      .then((loaded) => setResult(loaded))
+    loadResult(recordingId, previousId, controller.signal)
+      .then((loaded) => {
+        if (!controller.signal.aborted) setResult(loaded);
+      })
       .catch((error) => {
         if (!controller.signal.aborted) setResult({ ...EMPTY_RESULT, error });
       });
 
     return () => controller.abort();
-  }, [recordingId, previousId, previousNo, canLoad, resultRequest]);
+  }, [recordingId, previousId, canLoad, resultRequest]);
 
   const handleCelebrated = useCallback(() => setHasCelebrated(true), []);
 

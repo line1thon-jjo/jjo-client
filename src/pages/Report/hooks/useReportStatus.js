@@ -11,6 +11,12 @@ export function useReportStatus(recordingId) {
     const controller = new AbortController();
     const { signal } = controller;
     let timer;
+    let isPolling = false;
+
+    const poll = () => {
+      isPolling = true;
+      timer = setTimeout(() => load(() => getStatus(recordingId, { signal })), REPORT_POLL_MS);
+    };
 
     const load = async (fetchReport) => {
       try {
@@ -19,12 +25,11 @@ export function useReportStatus(recordingId) {
 
         const inProgress = REPORT_IN_PROGRESS.includes(report.status);
         setState((current) => ({ report, error: null, sawProgress: current.sawProgress || inProgress }));
-        if (inProgress) {
-          timer = setTimeout(() => load(() => getStatus(recordingId, { signal })), REPORT_POLL_MS);
-        }
+        if (inProgress) poll();
       } catch (error) {
         if (signal.aborted) return;
         if (error.code === "REPORT_NOT_FOUND") return load(() => startAnalysis(recordingId, { signal }));
+        if (isPolling && (error.status === 0 || error.status >= 500)) return poll();
         setState((current) => ({ ...current, report: null, error }));
       }
     };
