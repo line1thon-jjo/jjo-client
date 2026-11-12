@@ -49,9 +49,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 6px;
 
-  padding: 14px 14px 12px;
+  padding: 14px 12px 14px 14px;
   border: none;
   border-radius: 14px;
 
@@ -66,29 +66,63 @@
   opacity: 1;
 }
 
+.summary-panel__card-label {
+  color: #7a7a82;
+}
+
+.summary-panel__card-row {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
 .summary-panel__card-value {
   display: flex;
   align-items: baseline;
   gap: 1px;
 }
 
-.summary-panel__card-label {
-  color: #515151;
-}
+.summary-panel__trend {
+  height: 22px;
 
-.summary-panel__card-change {
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 
+  padding: 0 7px;
+  border-radius: 999px;
+
+  background-color: #f2f2f3;
   color: #7a7a82;
   white-space: nowrap;
 }
 
-.summary-panel__card-change[data-trend="better"] {
-  color: #648508;
+.summary-panel__trend[data-trend="better"] {
+  background-color: rgba(100, 133, 8, 0.1);
+  color: #557206;
 }
 
-.summary-panel__card-change[data-trend="worse"] {
+.summary-panel__trend[data-trend="worse"] {
+  background-color: rgba(174, 63, 65, 0.1);
   color: #ae3f41;
+}
+
+.summary-panel__arrow {
+  width: 9px;
+  height: 11px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.summary-panel__trend[data-trend="better"] .summary-panel__arrow {
+  transform: rotate(180deg);
 }
 
 .summary-panel__habits {

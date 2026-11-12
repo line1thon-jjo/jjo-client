@@ -209,8 +209,14 @@ function ReportNotice({ title, description, action, onAction }) {
   );
 }
 
-function ReportResult({ report, result, tab, onTabChange: setTab }) {
+function ReportResult({ report, result, tab, onTabChange }) {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [visitedTabs, setVisitedTabs] = useState(() => [tab]);
+
+  const setTab = (next) => {
+    onTabChange(next);
+    setVisitedTabs((visited) => (visited.includes(next) ? visited : [...visited, next]));
+  };
 
   const { overview, utterance, feedback, previous } = result;
   const isReady = Boolean(overview);
@@ -287,7 +293,7 @@ function ReportResult({ report, result, tab, onTabChange: setTab }) {
           className="report-page__panel"
           hidden={tab !== "detail"}
         >
-          {utterance ? (
+          {utterance && visitedTabs.includes("detail") ? (
             <>
               {warnings.map((code) => (
                 <p key={code} className="report-page__warning font-13-regular line-height-150">

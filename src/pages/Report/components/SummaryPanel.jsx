@@ -7,16 +7,35 @@ import { pickHighlights } from "@/pages/Report/lib/compareOverview";
 
 import "./SummaryPanel.css";
 
-function changeText({ before, after, unit }) {
+function Trend({ before, after, unit, showsBefore }) {
   if (before === null) return null;
-  if (before === after) return "변화 없음";
-  return `${Math.abs(after - before)}${unit} ${after < before ? "감소" : "증가"}`;
+
+  const difference = after - before;
+  const trend = difference === 0 ? "same" : difference < 0 ? "better" : "worse";
+  const label =
+    difference === 0 ? "변화 없음" : `${Math.abs(difference)}${unit} ${difference < 0 ? "줄었어요" : "늘었어요"}`;
+
+  return (
+    <span className="summary-panel__trend font-13-semibold" data-trend={trend} aria-label={label}>
+      {showsBefore ? (
+        `${before}${unit}에서`
+      ) : (
+        <>
+          {difference !== 0 && (
+            <svg className="summary-panel__arrow" viewBox="0 0 10 12" aria-hidden="true">
+              <path d="M5 11V1M1 5l4-4 4 4" />
+            </svg>
+          )}
+          {difference === 0 ? "–" : Math.abs(difference)}
+        </>
+      )}
+    </span>
+  );
 }
 
 function HighlightCard({ highlight, index }) {
-  const [showsDetail, setShowsDetail] = useState(false);
+  const [showsBefore, setShowsBefore] = useState(false);
   const { label, unit, before, after } = highlight;
-  const trend = before === null || before === after ? "same" : after < before ? "better" : "worse";
   const canToggle = before !== null && before !== after;
 
   return (
@@ -24,20 +43,18 @@ function HighlightCard({ highlight, index }) {
       <button
         type="button"
         className="summary-panel__card-button"
-        onClick={() => setShowsDetail((shown) => !shown)}
+        onClick={() => setShowsBefore((shown) => !shown)}
         disabled={!canToggle}
-        aria-pressed={canToggle ? showsDetail : undefined}
+        aria-pressed={canToggle ? showsBefore : undefined}
       >
-        <span className="summary-panel__card-value font-24-bold">
-          {after}
-          <span className="font-15-semibold">{unit}</span>
-        </span>
         <span className="summary-panel__card-label font-13-medium">{label}</span>
-        {before !== null && (
-          <span className="summary-panel__card-change font-13-semibold" data-trend={trend}>
-            {showsDetail ? `${before}${unit} → ${after}${unit}` : changeText(highlight)}
+        <span className="summary-panel__card-row">
+          <span className="summary-panel__card-value font-24-bold">
+            {after}
+            <span className="font-15-semibold">{unit}</span>
           </span>
-        )}
+          <Trend before={before} after={after} unit={unit} showsBefore={showsBefore} />
+        </span>
       </button>
     </li>
   );
