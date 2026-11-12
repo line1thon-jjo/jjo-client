@@ -70,7 +70,7 @@ export default function AppRouter() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/script" element={<ScriptRoute />} />
                 <Route path="/record" element={<RecordRoute />} />
-                <Route path="/reports/:recordingId" element={<ReportPage />} />
+                <Route path="/practices/:practiceId/reports/:recordingId" element={<ReportPage />} />
               </Route>
             </Route>
 

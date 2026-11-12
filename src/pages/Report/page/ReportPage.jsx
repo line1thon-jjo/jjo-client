@@ -1,56 +1,89 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import GreenButton from "@/components/Button/GreenButton";
 import Header from "@/components/Header/Header";
+import AnalyzingScreen from "@/pages/Report/components/AnalyzingScreen";
+import AttemptSelector from "@/pages/Report/components/AttemptSelector";
+import OverviewPanel from "@/pages/Report/components/OverviewPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
+import { findPreviousAttempt } from "@/pages/Report/lib/attempts";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
-import { getFeedback, getOverview, getUtterance } from "@/api/reports";
-import { REPORT_TABS } from "@/constants/report";
+import { getAttempts, getFeedback, getOverview, getUtterance } from "@/api/reports";
+import { REPORT_IN_PROGRESS, REPORT_TABS, REPORT_WARNINGS } from "@/constants/report";
 
 import infoIcon from "@/assets/icons/info-icon.svg";
 
 import "./ReportPage.css";
 
-const EMPTY_RESULT = { overview: null, utterance: null, feedback: null, error: null };
+const EMPTY_RESULT = {
+  attempts: [],
+  overview: null,
+  utterance: null,
+  feedback: null,
+  previous: null,
+  error: null,
+};
 
 export default function ReportPage() {
-  const { recordingId } = useParams();
-  return <Report key={recordingId} recordingId={recordingId} />;
+  const { practiceId, recordingId } = useParams();
+  return <Report key={recordingId} practiceId={practiceId} recordingId={recordingId} />;
 }
 
-function Report({ recordingId }) {
+async function loadResult(practiceId, recordingId, attemptNo, signal) {
+  const { attempts } = await getAttempts(practiceId, { signal }).catch((error) => {
+    if (error.name === "AbortError") throw error;
+    return { attempts: [] };
+  });
+  const previousAttempt = findPreviousAttempt(attempts, attemptNo);
+
+  const [overview, utterance, feedback, previousOverview] = await Promise.all([
+    getOverview(recordingId, { signal }),
+    getUtterance(recordingId, { signal }),
+    getFeedback(recordingId, { signal }),
+    previousAttempt ? getOverview(previousAttempt.recording_id, { signal }).catch(() => null) : null,
+  ]);
+
+  return {
+    attempts,
+    overview,
+    utterance,
+    feedback,
+    previous: previousOverview && { attemptNo: previousAttempt.attempt_no, overview: previousOverview },
+    error: null,
+  };
+}
+
+function Report({ practiceId, recordingId }) {
   const navigate = useNavigate();
-  const { report, error: statusError, retry: retryStatus } = useReportStatus(recordingId);
+  const { report, error: statusError, sawProgress, retry: retryStatus } = useReportStatus(recordingId);
   const [result, setResult] = useState(EMPTY_RESULT);
   const [resultRequest, setResultRequest] = useState(0);
+  const [hasCelebrated, setHasCelebrated] = useState(false);
 
   const isCompleted = report?.status === "COMPLETED";
+  const isInProgress = REPORT_IN_PROGRESS.includes(report?.status);
+  const attemptNo = report?.attempt_no;
 
   useEffect(() => {
     if (!isCompleted) return;
     const controller = new AbortController();
-    const { signal } = controller;
 
-    Promise.all([
-      getOverview(recordingId, { signal }),
-      getUtterance(recordingId, { signal }),
-      getFeedback(recordingId, { signal }),
-    ])
-      .then(([overview, utterance, feedback]) => {
-        if (!signal.aborted) setResult({ overview, utterance, feedback, error: null });
-      })
+    loadResult(practiceId, recordingId, attemptNo, controller.signal)
+      .then((loaded) => setResult(loaded))
       .catch((error) => {
-        if (!signal.aborted) setResult({ ...EMPTY_RESULT, error });
+        if (!controller.signal.aborted) setResult({ ...EMPTY_RESULT, error });
       });
 
     return () => controller.abort();
-  }, [recordingId, isCompleted, resultRequest]);
+  }, [practiceId, recordingId, attemptNo, isCompleted, resultRequest]);
 
   const handleBack = () => navigate("/");
+  const handleCelebrated = useCallback(() => setHasCelebrated(true), []);
+  const handleSelectAttempt = (nextRecordingId) => navigate(`/practices/${practiceId}/reports/${nextRecordingId}`);
 
   const handleRetryResult = () => {
     setResult(EMPTY_RESULT);
@@ -82,51 +115,37 @@ function Report({ recordingId }) {
     );
   }
 
-  if (report && !isCompleted) {
-    return (
-      <ReportNotice
-        title="녹음을 분석하고 있어요."
-        description="1분 녹음 기준 20~30초 정도 걸려요."
-        isBusy
-        onBack={handleBack}
-      />
-    );
+  if (isInProgress || (isCompleted && sawProgress && !hasCelebrated)) {
+    return <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={handleBack} />;
   }
 
-  return <ReportResult result={result} onBack={handleBack} />;
+  return <ReportResult report={report} result={result} onSelectAttempt={handleSelectAttempt} onBack={handleBack} />;
 }
 
-function ReportNotice({ title, description, action, onAction, isBusy = false, onBack }) {
+function ReportNotice({ title, description, action, onAction, onBack }) {
   return (
     <div className="report-page">
       <Header variant="back" onBack={onBack} />
-      <div className="report-page__notice" role={isBusy ? "status" : "alert"} aria-busy={isBusy}>
-        {isBusy && (
-          <span className="report-page__dots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-        )}
+      <div className="report-page__notice" role="alert">
         <p className="font-18-semibold">{title}</p>
         <p className="font-14-regular">{description}</p>
       </div>
-      {action && (
-        <div className="report-page__bottom">
-          <GreenButton text={action} onClick={onAction} showArrow={false} />
-        </div>
-      )}
+      <div className="report-page__bottom">
+        <GreenButton text={action} onClick={onAction} showArrow={false} />
+      </div>
     </div>
   );
 }
 
-function ReportResult({ result, onBack }) {
-  const [tab, setTab] = useState("utterance");
+function ReportResult({ report, result, onSelectAttempt, onBack }) {
+  const [tab, setTab] = useState(REPORT_TABS[0].id);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-  const { overview, utterance, feedback } = result;
+  const { attempts, overview, utterance, feedback, previous } = result;
+  const isReady = Boolean(overview);
   const feedbackCount = feedback?.items.length ?? 0;
   const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
+  const warnings = (report?.warnings ?? []).filter((code) => REPORT_WARNINGS[code]);
 
   const handleTabKeyDown = (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -137,29 +156,43 @@ function ReportResult({ result, onBack }) {
   };
 
   return (
-    <div className="report-page">
+    <div className="report-page" aria-busy={!isReady}>
       <Header variant="back" onBack={onBack} />
 
-      {overview ? (
-        <section className="report-page__summary">
-          <h1 className="report-page__headline font-22-regular">
+      <section className="report-page__intro">
+        {report ? (
+          <h1 className="report-page__title font-22-bold">{report.practice_title}</h1>
+        ) : (
+          <span className="report-page__skeleton font-22-bold" style={{ width: "64%" }} />
+        )}
+
+        {warnings.map((code) => (
+          <p key={code} className="report-page__warning font-13-regular line-height-150">
+            {REPORT_WARNINGS[code]}
+          </p>
+        ))}
+      </section>
+
+      {report && <AttemptSelector report={report} attempts={attempts} onSelect={onSelectAttempt} />}
+
+      <section className="report-page__summary">
+        {isReady ? (
+          <p className="report-page__headline font-22-regular">
             {overview.summary.headline}
             <strong className="font-22-bold">{overview.summary.footer}</strong>
-          </h1>
-        </section>
-      ) : (
-        <section className="report-page__summary" aria-busy="true">
+          </p>
+        ) : (
           <div className="report-page__headline font-22-regular">
             <span className="report-page__skeleton" style={{ width: "62%" }} />
             <span className="report-page__skeleton" style={{ width: "88%" }} />
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <div
         className="report-page__tabs"
         role="tablist"
-        style={{ "--tab-index": tabIndex }}
+        style={{ "--tab-index": tabIndex, "--tab-count": REPORT_TABS.length }}
         onKeyDown={handleTabKeyDown}
       >
         {REPORT_TABS.map(({ id, label }) => (
@@ -191,6 +224,24 @@ function ReportResult({ result, onBack }) {
 
       <main className="report-page__body">
         <section
+          id="report-panel-overview"
+          role="tabpanel"
+          aria-labelledby="report-tab-overview"
+          className="report-page__panel"
+          hidden={tab !== "overview"}
+        >
+          {isReady ? (
+            <OverviewPanel
+              overview={overview}
+              previousOverview={previous?.overview ?? null}
+              previousAttemptNo={previous?.attemptNo ?? null}
+            />
+          ) : (
+            <div className="report-page__loading" />
+          )}
+        </section>
+
+        <section
           id="report-panel-utterance"
           role="tabpanel"
           aria-labelledby="report-tab-utterance"
@@ -208,7 +259,7 @@ function ReportResult({ result, onBack }) {
               <UtteranceText utterance={utterance} />
             </>
           ) : (
-            <div className="report-page__loading" aria-busy="true" />
+            <div className="report-page__loading" />
           )}
         </section>
 
