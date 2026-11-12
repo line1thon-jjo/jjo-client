@@ -62,10 +62,29 @@ function ChangeSummary({ changes, previousAttemptNo }) {
   );
 }
 
+function HabitItem({ habit }) {
+  const { label, description, count, previous } = habit;
+
+  return (
+    <li className="overview-panel__habit" data-gone={count === 0 || undefined}>
+      <div className="overview-panel__habit-text">
+        <p className="font-18-semibold">{label}</p>
+        <p className="overview-panel__habit-description font-14-regular line-height-150">
+          {count === 0 ? "이번 연습에서는 나타나지 않았어요." : description}
+        </p>
+      </div>
+      <div className="overview-panel__habit-count">
+        <span className="overview-panel__count font-14-semibold">{count}회</span>
+        <Delta before={previous} after={count} unit="회" />
+      </div>
+    </li>
+  );
+}
+
 function HabitList({ habits }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const visible = isExpanded ? habits : habits.slice(0, HABITS_PREVIEW_COUNT);
-  const hidden = habits.length - HABITS_PREVIEW_COUNT;
+  const preview = habits.slice(0, HABITS_PREVIEW_COUNT);
+  const rest = habits.slice(HABITS_PREVIEW_COUNT);
 
   return (
     <section className="overview-panel__section" aria-labelledby="overview-habits-title">
@@ -77,32 +96,32 @@ function HabitList({ habits }) {
         <p className="overview-panel__empty font-15-regular">반복된 말 습관이 없었어요.</p>
       ) : (
         <ul className="overview-panel__habits">
-          {visible.map(({ type, label, description, count, previous }) => (
-            <li key={type} className="overview-panel__habit" data-gone={count === 0 || undefined}>
-              <div className="overview-panel__habit-text">
-                <p className="font-18-semibold">{label}</p>
-                <p className="overview-panel__habit-description font-14-regular line-height-150">
-                  {count === 0 ? "이번 연습에서는 나타나지 않았어요." : description}
-                </p>
-              </div>
-              <div className="overview-panel__habit-count">
-                <span className="overview-panel__count font-14-semibold">{count}회</span>
-                <Delta before={previous} after={count} unit="회" />
-              </div>
-            </li>
+          {preview.map((habit) => (
+            <HabitItem key={habit.type} habit={habit} />
           ))}
         </ul>
       )}
 
-      {hidden > 0 && (
-        <button
-          type="button"
-          className="overview-panel__more font-14-medium"
-          aria-expanded={isExpanded}
-          onClick={() => setIsExpanded((expanded) => !expanded)}
-        >
-          {isExpanded ? "접기" : `${hidden}개 더 보기`}
-        </button>
+      {rest.length > 0 && (
+        <>
+          <div id="overview-habits-more" className="overview-panel__collapse" data-open={isExpanded || undefined}>
+            <ul className="overview-panel__habits" inert={!isExpanded}>
+              {rest.map((habit) => (
+                <HabitItem key={habit.type} habit={habit} />
+              ))}
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            className="overview-panel__more font-14-medium"
+            aria-expanded={isExpanded}
+            aria-controls="overview-habits-more"
+            onClick={() => setIsExpanded((expanded) => !expanded)}
+          >
+            {isExpanded ? "접기" : `${rest.length}개 더 보기`}
+          </button>
+        </>
       )}
     </section>
   );
