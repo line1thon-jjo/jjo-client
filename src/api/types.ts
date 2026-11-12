@@ -11,6 +11,9 @@ export type FeedbackResponse = Schemas["FeedbackResponse"];
 export type FeedbackItem = Schemas["FeedbackItem"];
 export type AudioUrlResponse = Schemas["AudioUrlResponse"];
 export type Agreements = Schemas["Agreements"];
+export type Practice = Schemas["PracticeResponse"];
+export type Recording = Schemas["RecordingResponse"];
+export type ScriptUpload = Schemas["ScriptUploadResponse"];
 
 export type NextStep = "terms" | "onboarding" | "practices";
 
