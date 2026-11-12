@@ -1,4 +1,6 @@
 import { ApiError } from "@/api/errors";
+import { MOCK_PRACTICES } from "@/api/mocks/practices";
+import { synthUtterance } from "@/api/mocks/synthUtterance";
 import { MOCK_UTTERANCE } from "@/api/mocks/utterance";
 import { wait } from "@/api/mocks/wait";
 import type {
@@ -28,10 +30,14 @@ interface MockRecording {
 const MOCK_ANALYSIS_MS = 6000;
 const HOUR_MS = 60 * 60 * 1000;
 
-const MOCK_PRACTICE_TITLES: Record<number, string> = {
-  1: "카카오페이와 위챗페이 비교",
-  2: "동아리 신입 모집 발표",
-};
+function practiceTitle(practiceId: number) {
+  return MOCK_PRACTICES.find(({ id }) => id === practiceId)?.title;
+}
+
+function practiceScript(practiceId: number) {
+  return MOCK_PRACTICES.find(({ id }) => id === practiceId)?.script ?? "";
+}
+
 
 function hoursAgo(hours: number) {
   return new Date(Date.now() - hours * HOUR_MS).toISOString();
@@ -87,6 +93,25 @@ const RISE_FEEDBACK = feedbackItem(
 
 function ranked(items: FeedbackItem[]): FeedbackResponse {
   return { items: items.map((item, index) => ({ ...item, rank: index + 1 })) };
+}
+
+function completed(practiceId: number, attemptNo: number, hours: number, headline: string, footer: string): MockRecording {
+  return {
+    practice_id: practiceId,
+    attempt_no: attemptNo,
+    recorded_at: hoursAgo(hours),
+    duration_ms: Math.round(practiceScript(practiceId).replace(/\s/g, "").length * 200),
+    outcome: "COMPLETED",
+    overview: {
+      summary: { headline, footer },
+      speed: { fast: Math.max(0, 6 - attemptNo * 2), normal: 8, slow: Math.max(0, 2 - Math.floor(attemptNo / 2)), measured: 12 },
+      habits: [
+        { type: "END_RISE", count: Math.max(0, 4 - attemptNo) },
+        { type: "MID_STRETCH", count: Math.max(1, 4 - attemptNo) },
+      ],
+    },
+    feedback: { items: [] },
+  };
 }
 
 const MOCK_RECORDINGS: Record<string, MockRecording> = {
@@ -146,6 +171,14 @@ const MOCK_RECORDINGS: Record<string, MockRecording> = {
     outcome: "FAILED",
     failure: { code: "NO_SPEECH" },
   },
+  5: completed(4, 1, 30, "근거를 말할 때 빨라졌어요.", "숫자가 나오는 문장은 한 박자 쉬고 말해 보세요."),
+  6: completed(4, 2, 27, "속도가 한결 차분해졌어요.", "문장 끝만 조금 더 내려 주세요."),
+  7: completed(5, 1, 50, "짧지만 힘 있게 들렸어요.", "마지막 ‘위하여’ 앞에서 잠깐 멈춰 보세요."),
+  8: completed(6, 1, 150, "질문으로 시작한 첫 문장이 좋았어요.", "가격 이야기에서 빨라지지 않게 해 보세요."),
+  9: completed(6, 2, 148, "가격 부분이 차분해졌어요.", "불빛 설명을 조금 더 또렷하게 말해 보세요."),
+  10: completed(6, 3, 125, "전체 흐름이 자연스러워요.", "마지막 문장에 힘을 실어 보세요."),
+  11: completed(6, 4, 100, "거의 다 왔어요.", "첫 질문 뒤에 쉼을 조금 더 길게 두세요."),
+  12: completed(8, 1, 215, "설명이 정확하게 전달됐어요.", "용어가 나올 때 속도를 늦춰 보세요."),
 };
 
 const analysisStartedAt: Record<string, number> = {};
@@ -174,7 +207,7 @@ function statusResponse(recordingId: RecordingId): ReportStatusResponse {
   return {
     recording_id: Number(recordingId),
     status,
-    practice_title: MOCK_PRACTICE_TITLES[recording.practice_id],
+    practice_title: practiceTitle(recording.practice_id) ?? "",
     recorded_at: recording.recorded_at,
     attempt_no: recording.attempt_no,
     duration_ms: recording.duration_ms,
@@ -191,7 +224,7 @@ async function completedRecording(recordingId: RecordingId) {
 
 export async function getAttempts(practiceId: number | string): Promise<AttemptsResponse> {
   await wait();
-  if (!MOCK_PRACTICE_TITLES[Number(practiceId)]) throw new ApiError(404, "PRACTICE_NOT_FOUND");
+  if (!practiceTitle(Number(practiceId))) throw new ApiError(404, "PRACTICE_NOT_FOUND");
 
   return {
     attempts: Object.entries(MOCK_RECORDINGS)
@@ -221,8 +254,8 @@ export async function getOverview(recordingId: RecordingId) {
 }
 
 export async function getUtterance(recordingId: RecordingId) {
-  await completedRecording(recordingId);
-  return MOCK_UTTERANCE;
+  const recording = await completedRecording(recordingId);
+  return recording.practice_id === 1 ? MOCK_UTTERANCE : synthUtterance(practiceScript(recording.practice_id));
 }
 
 export async function getFeedback(recordingId: RecordingId) {
