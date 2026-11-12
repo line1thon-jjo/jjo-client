@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 
 import { ATTEMPT_STATUS_LABELS } from "@/constants/report";
 
+import plusIcon from "@/assets/icons/plus-icon.svg";
+
 import "./AttemptTabs.css";
 
-export default function AttemptTabs({ attempts, currentId, details, onSelect }) {
+export default function AttemptTabs({ attempts, currentId, details, onSelect, onAdd }) {
   const listRef = useRef(null);
   const sorted = [...attempts].sort((a, b) => a.attempt_no - b.attempt_no);
 
@@ -44,6 +46,13 @@ export default function AttemptTabs({ attempts, currentId, details, onSelect }) 
             </li>
           );
         })}
+        {onAdd && (
+          <li>
+            <button type="button" className="attempt-tabs__add" onClick={onAdd} aria-label="다시 녹음하기">
+              <img src={plusIcon} alt="" />
+            </button>
+          </li>
+        )}
       </ul>
     </nav>
   );

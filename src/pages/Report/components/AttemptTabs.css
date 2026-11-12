@@ -46,6 +46,34 @@
   color: #ffffff;
 }
 
+.attempt-tabs__add {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+  border: 1px dashed #c9c9cf;
+  border-radius: 50%;
+
+  background: none;
+
+  transition:
+    border-color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard);
+}
+
+.attempt-tabs__add:disabled {
+  opacity: 0.4;
+}
+
+.attempt-tabs__add img {
+  width: 12px;
+  height: 12px;
+}
+
 .attempt-tabs__detail {
   display: grid;
   grid-template-columns: 0fr;

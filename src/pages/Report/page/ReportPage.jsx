@@ -13,6 +13,7 @@ import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
 import { findPreviousAttempt, formatDuration } from "@/pages/Report/lib/attempts";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
+import { getPractice } from "@/api/practices";
 import { getAttempts, getFeedback, getOverview, getUtterance } from "@/api/reports";
 import { REPORT_IN_PROGRESS, REPORT_TABS, REPORT_WARNINGS } from "@/constants/report";
 
@@ -32,6 +33,7 @@ function PracticeReport({ practiceId, recordingId }) {
   const [attempts, setAttempts] = useState(null);
   const [current, setCurrent] = useState(null);
   const [durations, setDurations] = useState({});
+  const [practice, setPractice] = useState(null);
   const [tab, setTab] = useState(REPORT_TABS[0].id);
 
   useEffect(() => {
@@ -42,6 +44,16 @@ function PracticeReport({ practiceId, recordingId }) {
       .catch(() => {
         if (!controller.signal.aborted) setAttempts([]);
       });
+
+    return () => controller.abort();
+  }, [practiceId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    getPractice(practiceId, { signal: controller.signal })
+      .then(setPractice)
+      .catch(() => {});
 
     return () => controller.abort();
   }, [practiceId]);
@@ -60,6 +72,7 @@ function PracticeReport({ practiceId, recordingId }) {
 
   const handleBack = () => navigate("/");
   const handleSelect = (id) => navigate(`/practices/${practiceId}/reports/${id}`, { replace: true });
+  const handleRecordAgain = () => navigate("/record", { state: { title: practice.title, script: practice.script } });
 
   return (
     <div className="report-page">
@@ -78,6 +91,7 @@ function PracticeReport({ practiceId, recordingId }) {
               currentId={recordingId}
               details={durations}
               onSelect={handleSelect}
+              onAdd={practice ? handleRecordAgain : undefined}
             />
           )}
         </div>
@@ -92,6 +106,10 @@ function PracticeReport({ practiceId, recordingId }) {
         onReport={handleReport}
         onBack={handleBack}
       />
+
+      <div className="report-page__cta">
+        <GreenButton text="다시 녹음하기" onClick={handleRecordAgain} disabled={!practice} />
+      </div>
     </div>
   );
 }
@@ -182,15 +200,13 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
 
 function ReportNotice({ title, description, action, onAction }) {
   return (
-    <>
-      <div className="report-page__notice" role="alert">
-        <p className="font-18-semibold">{title}</p>
-        <p className="font-14-regular">{description}</p>
-      </div>
-      <div className="report-page__bottom">
-        <GreenButton text={action} onClick={onAction} showArrow={false} />
-      </div>
-    </>
+    <div className="report-page__notice" role="alert">
+      <p className="font-18-semibold">{title}</p>
+      <p className="font-14-regular">{description}</p>
+      <button type="button" className="report-page__notice-action font-14-semibold" onClick={onAction}>
+        {action}
+      </button>
+    </div>
   );
 }
 
