@@ -29,7 +29,7 @@ export default function LoginPage() {
   };
 
   return (
-    <BrandLayout intro footer={<GoogleLoginButton onClick={handleLogin} loading={isLoading} />}>
+    <BrandLayout footer={<GoogleLoginButton onClick={handleLogin} loading={isLoading} />}>
       <p className="login-page__description font-15-medium line-height-160">
         대본을 읽는 내 목소리를
         <br />

@@ -7,6 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import AppSplash from "@/components/AppSplash/AppSplash";
 import AuthProvider from "@/auth/AuthProvider";
 import MotionProvider from "@/lib/motion/MotionProvider";
 import { GuestOnly, RequireOnboarded, RequireSignup, RequireUser } from "@/auth/guards";
@@ -75,6 +76,7 @@ export default function AppRouter() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <AppSplash />
         </AuthProvider>
       </MotionProvider>
     </BrowserRouter>
