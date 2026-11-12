@@ -1,5 +1,6 @@
 import * as mock from "@/api/mocks/practices";
 import { request, USE_MOCK } from "@/api/client";
+import { isDemoId, isDemoMode } from "@/api/demo";
 import type { Practice, Recording, RequestOptions, ScriptUpload } from "@/api/types";
 
 const server = {
@@ -29,6 +30,24 @@ const server = {
   },
 };
 
-export const { listPractices, getPractice, createPractice, uploadScript, uploadRecording }: typeof server = USE_MOCK
-  ? mock
-  : server;
+type Server = typeof server;
+
+export const listPractices: Server["listPractices"] = async (options) => {
+  if (USE_MOCK) return mock.listPractices();
+  if (!isDemoMode()) return server.listPractices(options);
+
+  const [practices, demoPractices] = await Promise.all([server.listPractices(options), mock.listPractices()]);
+  return [...practices, ...demoPractices];
+};
+
+export const getPractice: Server["getPractice"] = (practiceId, options) =>
+  USE_MOCK || isDemoId(practiceId) ? mock.getPractice(practiceId) : server.getPractice(practiceId, options);
+
+export const createPractice: Server["createPractice"] = (script, options) =>
+  USE_MOCK ? mock.createPractice(script) : server.createPractice(script, options);
+
+export const uploadScript: Server["uploadScript"] = (file, options) =>
+  USE_MOCK ? mock.uploadScript(file) : server.uploadScript(file, options);
+
+export const uploadRecording: Server["uploadRecording"] = (practiceId, audio, durationMs, options) =>
+  USE_MOCK ? mock.uploadRecording(practiceId, audio, durationMs) : server.uploadRecording(practiceId, audio, durationMs, options);

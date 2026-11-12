@@ -11,6 +11,7 @@ import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
 import { findPreviousAttempt, formatDuration } from "@/pages/Report/lib/attempts";
+import { isDemoId } from "@/api/demo";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
 import { getPractice } from "@/api/practices";
 import { getAttempts, getFeedback, getOverview, getUtterance } from "@/api/reports";
@@ -74,7 +75,9 @@ function PracticeReport({ practiceId, recordingId }) {
   const handleBack = () => navigate("/");
   const handleSelect = (id) => navigate(`/practices/${practiceId}/reports/${id}`, { replace: true });
   const handleRecordAgain = () =>
-    navigate("/record", { state: { title: practice.title, script: practice.script, practiceId: practice.id } });
+    navigate("/record", {
+      state: { title: practice.title, script: practice.script, practiceId: isDemoId(practice.id) ? undefined : practice.id },
+    });
 
   return (
     <div className="report-page">
