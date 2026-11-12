@@ -49,7 +49,12 @@ export default function PracticeRow({ entry, isOpen, onToggle, onRecord, onOpenR
 
       <div id={bodyId} className="practice-row__body" onTransitionEnd={handleTransitionEnd}>
         <div className="practice-row__body-inner">
-          <div ref={clipRef} className="practice-row__clip" data-overflow={isOverflowing || undefined}>
+          <div
+            ref={clipRef}
+            className="practice-row__clip"
+            data-fixed={Boolean(latestCompleted) || undefined}
+            data-overflow={isOverflowing || undefined}
+          >
             {hasOpened &&
               (latestCompleted ? (
                 <PracticeSummary latestCompleted={latestCompleted} previousCompleted={previousCompleted} />

@@ -126,6 +126,10 @@
   overflow: hidden;
 }
 
+.practice-row__clip[data-fixed] {
+  height: 248px;
+}
+
 .practice-row__clip[data-overflow] {
   -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent);
   mask-image: linear-gradient(to bottom, #000 64%, transparent);
@@ -153,17 +157,6 @@
   color: #09090b;
 }
 
-.practice-row__habits {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.practice-row__caption {
-  margin: 0;
-
-  color: #a1a1aa;
-}
 
 .practice-row__script {
   margin: 0;

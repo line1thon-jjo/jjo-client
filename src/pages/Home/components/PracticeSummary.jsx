@@ -20,12 +20,7 @@ export default function PracticeSummary({ latestCompleted, previousCompleted }) 
         {overview.summary.headline}
         <strong className="font-17-bold">{overview.summary.footer}</strong>
       </p>
-      <div className="practice-row__habits">
-        {previous && (
-          <p className="practice-row__caption font-14-regular">{previousCompleted.attempt_no}회차 대비</p>
-        )}
-        <HabitRows overview={overview} previous={previous} />
-      </div>
+      <HabitRows overview={overview} previous={previous} />
     </div>
   );
 }
