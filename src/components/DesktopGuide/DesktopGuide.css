@@ -1,0 +1,126 @@
+.desktop-guide {
+  display: none;
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .desktop-guide {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+
+    width: calc((100vw - var(--app-width)) / 2);
+
+    display: flex;
+
+    padding: 48px;
+
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .desktop-guide--left {
+    left: 0;
+
+    justify-content: flex-end;
+  }
+
+  .desktop-guide--right {
+    right: 0;
+
+    justify-content: flex-start;
+  }
+}
+
+.desktop-guide__inner {
+  width: 100%;
+  max-width: 320px;
+  margin: auto 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-guide__inner--animated {
+  animation: desktop-guide-fade-up var(--duration-slow) var(--ease-standard) both;
+}
+
+.desktop-guide__logo {
+  align-self: flex-start;
+
+  height: 28px;
+  margin-bottom: 28px;
+}
+
+.desktop-guide__heading {
+  margin: 0;
+
+  color: #09090b;
+}
+
+.desktop-guide__highlight {
+  padding: 0 2px;
+
+  background: linear-gradient(transparent 58%, #d9f768 58%);
+  color: inherit;
+}
+
+.desktop-guide__body {
+  margin: 16px 0 0;
+
+  color: #515151;
+}
+
+.desktop-guide__list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  margin: 28px 0 0;
+  padding: 24px 0 0;
+
+  border-top: 1px solid rgba(9, 9, 11, 0.07);
+}
+
+.desktop-guide__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.desktop-guide__label {
+  color: #648508;
+}
+
+.desktop-guide__text {
+  margin: 0;
+
+  color: #3f3f46;
+}
+
+.desktop-guide__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0 0 14px;
+
+  color: #648508;
+}
+
+.desktop-guide__step-index {
+  color: #a1a1aa;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes desktop-guide-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-guide__inner--animated {
+    animation: none;
+  }
+}
