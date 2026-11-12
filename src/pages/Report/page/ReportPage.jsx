@@ -194,7 +194,7 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
 
   return (
     <>
-      {!isInProgress && <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />}
+      <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />
       {showsAnalyzing && <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />}
     </>
   );
