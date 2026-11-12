@@ -66,11 +66,15 @@ export default function PracticeRow({ entry, isOpen, onToggle, onRecord, onOpenR
           </div>
 
           <div className="practice-row__actions">
-            <GreenButton text={latest ? "다시 녹음하기" : "녹음 시작하기"} onClick={() => onRecord(practice)} />
-            {latest && (
-              <button type="button" className="practice-row__report font-15-semibold" onClick={() => onOpenReport(entry)}>
-                결과 보기
-              </button>
+            {latest ? (
+              <>
+                <GreenButton text="코치 받기" onClick={() => onOpenReport(entry)} />
+                <button type="button" className="practice-row__report font-15-semibold" onClick={() => onRecord(practice)}>
+                  다시 녹음하기
+                </button>
+              </>
+            ) : (
+              <GreenButton text="녹음 시작하기" onClick={() => onRecord(practice)} />
             )}
           </div>
         </div>
