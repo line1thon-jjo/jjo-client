@@ -3,14 +3,14 @@ import HabitRows from "@/pages/Report/components/HabitRows";
 
 import "./SummaryPanel.css";
 
-export default function SummaryPanel({ overview, previous, feedback, onFocusPace }) {
+export default function SummaryPanel({ overview, previous, feedback, playing, onPlay, onFocusPace }) {
   return (
     <div className="summary-panel">
       <section className="summary-panel__section" aria-labelledby="summary-next-title">
         <h2 id="summary-next-title" className="summary-panel__heading font-17-semibold">
           연습 포인트
         </h2>
-        <FeedbackList items={feedback.items} />
+        <FeedbackList items={feedback.items} playing={playing} onPlay={onPlay} />
       </section>
 
       <section className="summary-panel__section" aria-labelledby="summary-habits-title">

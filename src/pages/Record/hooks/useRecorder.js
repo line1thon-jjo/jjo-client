@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
+import { RECORD_MAX_MS, RECORD_TICK_MS } from "@/constants/record";
+
 // status: "idle" | "recording" | "paused" | "done"
 export default function useRecorder() {
   const [status, setStatus] = useState("idle");
   const [seconds, setSeconds] = useState(0);
+  const [durationMs, setDurationMs] = useState(0);
+  const [reachedLimit, setReachedLimit] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [error, setError] = useState(null);
 
@@ -11,16 +15,41 @@ export default function useRecorder() {
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
+  const limitRef = useRef(null);
+  const elapsedRef = useRef(0);
+  const runStartRef = useRef(null);
 
-  const startTimer = () => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
-  };
+  const elapsedMs = () =>
+    elapsedRef.current + (runStartRef.current === null ? 0 : performance.now() - runStartRef.current);
 
   const stopTimer = () => {
     clearInterval(timerRef.current);
+    clearTimeout(limitRef.current);
+    elapsedRef.current = elapsedMs();
+    runStartRef.current = null;
+  };
+
+  const finish = (hitLimit = false) => {
+    if (!recorderRef.current || recorderRef.current.state === "inactive") return;
+
+    stopTimer();
+    setReachedLimit(hitLimit);
+    recorderRef.current.stop();
+  };
+
+  const startTimer = () => {
+    clearInterval(timerRef.current);
+    clearTimeout(limitRef.current);
+    runStartRef.current = performance.now();
+    limitRef.current = setTimeout(() => finish(true), Math.max(0, RECORD_MAX_MS - elapsedRef.current));
+    timerRef.current = setInterval(() => {
+      const elapsed = elapsedMs();
+      if (elapsed >= RECORD_MAX_MS) {
+        finish(true);
+        return;
+      }
+      setSeconds(Math.floor(elapsed / 1000));
+    }, RECORD_TICK_MS);
   };
 
   const releaseStream = () => {
@@ -53,6 +82,9 @@ export default function useRecorder() {
       };
 
       recorder.onstop = () => {
+        stopTimer();
+        setSeconds(Math.floor(elapsedRef.current / 1000));
+        setDurationMs(Math.round(elapsedRef.current));
         setAudioBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
         setStatus("done");
         releaseStream();
@@ -61,9 +93,12 @@ export default function useRecorder() {
       recorder.start();
       recorderRef.current = recorder;
 
+      elapsedRef.current = 0;
       setError(null);
       setAudioBlob(null);
       setSeconds(0);
+      setDurationMs(0);
+      setReachedLimit(false);
       setStatus("recording");
       startTimer();
     } catch {
@@ -88,12 +123,7 @@ export default function useRecorder() {
     setStatus("recording");
   };
 
-  const stop = () => {
-    if (!recorderRef.current || recorderRef.current.state === "inactive") return;
-
-    stopTimer();
-    recorderRef.current.stop();
-  };
+  const stop = () => finish();
 
   // 녹음 버리고 처음 상태로 (다시 녹음, 뒤로 가기)
   const reset = () => {
@@ -101,15 +131,19 @@ export default function useRecorder() {
     killRecorder();
     releaseStream();
 
+    elapsedRef.current = 0;
     setAudioBlob(null);
     setSeconds(0);
+    setDurationMs(0);
+    setReachedLimit(false);
     setError(null);
     setStatus("idle");
   };
 
   useEffect(() => {
     return () => {
-      stopTimer();
+      clearInterval(timerRef.current);
+      clearTimeout(limitRef.current);
       killRecorder();
       releaseStream();
     };
@@ -118,6 +152,8 @@ export default function useRecorder() {
   return {
     status,
     seconds,
+    durationMs,
+    reachedLimit,
     audioBlob,
     error,
     start,

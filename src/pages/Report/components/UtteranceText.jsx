@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
 
-import { buildGlyphs, findCharAt, groupWords } from "@/pages/Report/lib/buildGlyphs";
+import { buildGlyphs, groupWords } from "@/pages/Report/lib/buildGlyphs";
 
 import "./UtteranceText.css";
 
@@ -70,7 +70,7 @@ const Space = memo(function Space({ glyph, isPlaying }) {
   );
 });
 
-export default function UtteranceText({ utterance, timeMs = 0, isPlaying = false, focusPace = null, onSelectSegment }) {
+export default function UtteranceText({ utterance, currentChar = -1, focusPace = null, onSelectSegment }) {
   const glyphs = useMemo(() => buildGlyphs(utterance), [utterance]);
   const tokens = useMemo(() => groupWords(glyphs), [glyphs]);
   const [isReady, setIsReady] = useState(false);
@@ -88,8 +88,7 @@ export default function UtteranceText({ utterance, timeMs = 0, isPlaying = false
     };
   }, []);
 
-  const currentChar = isPlaying ? findCharAt(utterance.segments, timeMs) : -1;
-  const currentSegment = currentChar >= 0 ? glyphs[currentChar].segment : -1;
+  const currentSegment = glyphs[currentChar]?.segment ?? -1;
 
   const waveOf = (idx) => {
     const distance = currentChar - idx;
