@@ -31,7 +31,7 @@ const SLIDES = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { completeOnboarding } = useAuth();
+  const { user, completeOnboarding } = useAuth();
   const track = useRef(null);
   const [current, setCurrent] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +49,11 @@ export default function OnboardingPage() {
   };
 
   const handleFinish = async () => {
+    if (user.onboarding_completed) {
+      navigate(NEXT_STEP_PATH.practices, { replace: true });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
