@@ -67,6 +67,7 @@ export default function RecordBar({
   status,
   seconds,
   isBusy = false,
+  canConfirm = true,
   onStart,
   onPause,
   onResume,
@@ -124,7 +125,7 @@ export default function RecordBar({
             <CircleButton tone="dark" label="다시 녹음" onClick={onRetry} disabled={isBusy}>
               <img src={retryIcon} alt="" className="record-bar__icon" />
             </CircleButton>
-            <CircleButton tone="main" label="녹음 완료" onClick={onConfirm} disabled={isBusy}>
+            <CircleButton tone="main" label="녹음 완료" onClick={onConfirm} disabled={isBusy || !canConfirm}>
               <CheckIcon />
             </CircleButton>
           </>

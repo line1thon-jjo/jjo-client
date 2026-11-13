@@ -92,3 +92,7 @@
   color: #ff2d28;
   text-align: center;
 }
+
+.record-page__error--notice {
+  color: #7a7a82;
+}
