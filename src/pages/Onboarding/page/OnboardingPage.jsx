@@ -74,7 +74,7 @@ export default function OnboardingPage() {
           disabled={isSubmitting}
           data-hidden={isLast}
         >
-          건너뛰기
+          {user.onboarding_completed ? "닫기" : "건너뛰기"}
         </button>
       </header>
 
