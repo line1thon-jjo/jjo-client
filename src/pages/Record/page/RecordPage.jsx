@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { m } from "motion/react";
 
 import Header from "@/components/Header/Header";
 import { EASE } from "@/lib/motion/presets";
 import { getErrorMessage } from "@/api/messages";
-import { uploadRecording } from "@/api/practices";
+import { createPractice, uploadRecording } from "@/api/practices";
 import { RECORD_MESSAGES, RECORD_MIN_MS } from "@/constants/record";
 
 import RecordBar from "../components/RecordBar";
@@ -32,6 +32,7 @@ export default function RecordPage({
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const practiceIdRef = useRef(practiceId ?? null);
 
   const isTooShort = status === "done" && durationMs < RECORD_MIN_MS;
 
@@ -54,10 +55,15 @@ export default function RecordPage({
     setUploadError(null);
 
     try {
-      const recording = await uploadRecording(practiceId, audioBlob, durationMs);
+      if (practiceIdRef.current === null) {
+        const practice = await createPractice(script);
+        practiceIdRef.current = practice.id;
+      }
+
+      const recording = await uploadRecording(practiceIdRef.current, audioBlob, durationMs);
 
       onUploaded?.({
-        practiceId,
+        practiceId: practiceIdRef.current,
         recordingId: recording.recording_id,
       });
     } catch (uploadFailure) {

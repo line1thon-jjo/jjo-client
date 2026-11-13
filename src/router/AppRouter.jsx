@@ -43,7 +43,7 @@ function RecordRoute() {
   const location = useLocation();
   const practiceData = location.state;
 
-  if (!practiceData?.practiceId || !practiceData?.script) {
+  if (!practiceData?.script) {
     return <Navigate to="/script" replace />;
   }
 
