@@ -40,7 +40,19 @@ export function useAudioPlayer(recordingId) {
       }
     };
 
+    const handleTimeUpdate = () => {
+      const range = rangeRef.current;
+      if (range && audio.currentTime * 1000 >= range.end_ms) stop();
+    };
+
+    const handlePause = () => {
+      if (audio.paused && rangeRef.current) stop();
+    };
+
     audio.addEventListener("error", handleError);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("pause", handlePause);
+    audio.addEventListener("ended", stop);
 
     getAudioUrl(recordingId, { signal: controller.signal })
       .then(({ audio_url }) => {
@@ -57,6 +69,9 @@ export function useAudioPlayer(recordingId) {
       controller.abort();
       cancelAnimationFrame(frameRef.current);
       audio.removeEventListener("error", handleError);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("ended", stop);
       audio.pause();
       audio.removeAttribute("src");
       audio.load();
