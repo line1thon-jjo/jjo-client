@@ -5,6 +5,7 @@ import Header from "@/components/Header/Header";
 import { EASE } from "@/lib/motion/presets";
 import { getErrorMessage } from "@/api/messages";
 import { createPractice, uploadRecording } from "@/api/practices";
+import { RECORD_MESSAGES, RECORD_MIN_MS } from "@/constants/record";
 
 import RecordBar from "../components/RecordBar";
 import useRecorder from "../hooks/useRecorder";
@@ -27,13 +28,13 @@ export default function RecordPage({
   onUploaded,
 }) {
   const recorder = useRecorder();
-  const { status, seconds, audioBlob, error } = recorder;
+  const { status, seconds, durationMs, reachedLimit, audioBlob, error } = recorder;
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-
-  // 업로드만 실패했을 때 다시 눌러도 연습이 또 생기지 않도록 기억
   const practiceIdRef = useRef(practiceId ?? null);
+
+  const isTooShort = status === "done" && durationMs < RECORD_MIN_MS;
 
   const handleBack = () => {
     if (isUploading) return;
@@ -48,18 +49,18 @@ export default function RecordPage({
   };
 
   const handleConfirm = async () => {
-    if (!audioBlob || isUploading) return;
+    if (!audioBlob || isUploading || isTooShort) return;
 
     setIsUploading(true);
     setUploadError(null);
 
     try {
-      if (practiceIdRef.current == null) {
+      if (practiceIdRef.current === null) {
         const practice = await createPractice(script);
         practiceIdRef.current = practice.id;
       }
 
-      const recording = await uploadRecording(practiceIdRef.current, audioBlob, seconds * 1000);
+      const recording = await uploadRecording(practiceIdRef.current, audioBlob, durationMs);
 
       onUploaded?.({
         practiceId: practiceIdRef.current,
@@ -71,7 +72,8 @@ export default function RecordPage({
     }
   };
 
-  const message = uploadError ?? error;
+  const failure = uploadError ?? error ?? (isTooShort ? RECORD_MESSAGES.tooShort : null);
+  const notice = status === "done" && reachedLimit ? RECORD_MESSAGES.reachedLimit : null;
 
   return (
     <div className="record-page">
@@ -83,7 +85,13 @@ export default function RecordPage({
       </main>
 
       <div className="record-page__bottom">
-        {message && <p className="record-page__error">{message}</p>}
+        {failure ? (
+          <p className="record-page__error" role="alert">
+            {failure}
+          </p>
+        ) : (
+          notice && <p className="record-page__error record-page__error--notice">{notice}</p>
+        )}
 
         <m.div
           className="record-page__bar"
@@ -118,6 +126,7 @@ export default function RecordPage({
               status={status}
               seconds={seconds}
               isBusy={isUploading}
+              canConfirm={!isTooShort}
               onStart={recorder.start}
               onPause={recorder.pause}
               onResume={recorder.resume}

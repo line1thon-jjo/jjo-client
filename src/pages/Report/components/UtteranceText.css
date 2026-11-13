@@ -31,18 +31,23 @@
 }
 
 .glyph {
-  --pace-color: transparent;
   --pace-spacing: 0em;
   --delay: calc(var(--i) * var(--sweep-step));
 
   padding-bottom: 0.2em;
 
+  letter-spacing: calc(-0.025em + var(--pace-spacing));
+
+  transition:
+    background-color var(--duration-slow) var(--ease-standard),
+    opacity var(--duration-slow) var(--ease-standard);
+}
+
+.glyph[data-pace] {
   background-image: linear-gradient(var(--pace-color), var(--pace-color));
   background-position: 0 calc(1.16em + 1px);
   background-repeat: no-repeat;
   background-size: calc(100% * var(--reveal)) 2px;
-
-  letter-spacing: calc(-0.025em + var(--pace-spacing));
 
   transition:
     background-color var(--duration-slow) var(--ease-standard),
@@ -111,13 +116,13 @@
   --emphasis: var(--reveal);
 }
 
-.utterance[data-ready] .glyph__char {
-  animation: utterance-sweep 560ms var(--ease-standard) var(--delay) backwards;
+.utterance:not([data-settled]) .glyph__char {
+  transition-duration: 960ms, 0s, var(--duration-slow);
+  transition-delay: calc(var(--delay) + 120ms), calc(var(--delay) + 224ms), calc(var(--delay) + 180ms);
 }
 
-.utterance[data-ready] .glyph__char[data-pitch],
-.utterance[data-ready] .glyph__char[data-stretch] {
-  animation-name: utterance-sweep-mark;
+.utterance[data-ready] .glyph__char::after {
+  animation: utterance-sweep 560ms var(--ease-standard) var(--delay) backwards;
 }
 
 .glyph__char[data-wave] {
@@ -205,39 +210,18 @@
 }
 
 @keyframes utterance-sweep {
-  0% {
-    color: var(--muted);
-    font-weight: var(--base-weight);
+  0%,
+  100% {
+    color: transparent;
+    visibility: visible;
   }
 
   40% {
     color: var(--ink);
-    font-weight: 760;
-  }
-
-  100% {
-    color: var(--muted);
-    font-weight: var(--base-weight);
+    visibility: visible;
   }
 }
 
-@keyframes utterance-sweep-mark {
-  0% {
-    color: var(--muted);
-    font-weight: var(--base-weight);
-  }
-
-  40% {
-    color: var(--ink);
-    font-weight: 760;
-  }
-
-  100% {
-    color: var(--ink);
-    font-weight: var(--mark-weight);
-  }
-}
-
-.utterance[data-settled] .glyph__char {
+.utterance[data-settled] .glyph__char::after {
   animation: none;
 }

@@ -29,7 +29,11 @@ function ScriptRoute() {
   return (
     <ScriptPage
       onBack={() => collapseTo(".add-button", () => navigate("/"))}
-      onRecord={(practiceData) => navigate("/record", { state: practiceData })}
+      onRecord={(practice) =>
+        navigate("/record", {
+          state: { title: practice.title, script: practice.script, practiceId: practice.id },
+        })
+      }
     />
   );
 }
@@ -39,7 +43,7 @@ function RecordRoute() {
   const location = useLocation();
   const practiceData = location.state;
 
-  if (!practiceData?.title || !practiceData?.script) {
+  if (!practiceData?.script) {
     return <Navigate to="/script" replace />;
   }
 

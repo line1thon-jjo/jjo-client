@@ -9,8 +9,10 @@ import AttemptTabs from "@/pages/Report/components/AttemptTabs";
 import SummaryPanel from "@/pages/Report/components/SummaryPanel";
 import UtteranceGuide from "@/pages/Report/components/UtteranceGuide";
 import UtteranceText from "@/pages/Report/components/UtteranceText";
+import { useAudioPlayer } from "@/pages/Report/hooks/useAudioPlayer";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
 import { findPreviousAttempt, formatDuration } from "@/pages/Report/lib/attempts";
+import { findCharAt } from "@/pages/Report/lib/buildGlyphs";
 import { isDemoId } from "@/api/demo";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
 import { getPractice } from "@/api/practices";
@@ -201,7 +203,7 @@ function Report({ recordingId, attempts, tab, onTabChange, onReport, onBack }) {
 
   return (
     <>
-      <ReportResult report={report} result={result} tab={tab} onTabChange={onTabChange} />
+      <ReportResult recordingId={recordingId} report={report} result={result} tab={tab} onTabChange={onTabChange} />
       {showsAnalyzing && <AnalyzingScreen isDone={isCompleted} onDone={handleCelebrated} onBack={onBack} />}
     </>
   );
@@ -219,18 +221,21 @@ function ReportNotice({ title, description, action, onAction }) {
   );
 }
 
-function ReportResult({ report, result, tab, onTabChange }) {
+function ReportResult({ recordingId, report, result, tab, onTabChange }) {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [visitedTabs, setVisitedTabs] = useState(() => [tab]);
   const [focusPace, setFocusPace] = useState(null);
 
+  const { overview, utterance, feedback, previous } = result;
+  const isReady = Boolean(overview);
+  const player = useAudioPlayer(isReady ? recordingId : null);
+
   const setTab = (next) => {
+    if (next !== tab) player.stop();
     onTabChange(next);
     setVisitedTabs((visited) => (visited.includes(next) ? visited : [...visited, next]));
   };
 
-  const { overview, utterance, feedback, previous } = result;
-  const isReady = Boolean(overview);
   const tabIndex = REPORT_TABS.findIndex(({ id }) => id === tab);
   const warnings = (report?.warnings ?? []).filter((code) => REPORT_WARNINGS[code]);
 
@@ -240,6 +245,11 @@ function ReportResult({ report, result, tab, onTabChange }) {
   };
 
   const handleTogglePace = (pace) => setFocusPace((current) => (current === pace ? null : pace));
+
+  const handleSelectSegment = (index) => {
+    const segment = utterance.segments[index];
+    if (segment) player.toggle(segment, (timeMs) => findCharAt(utterance.segments, timeMs));
+  };
 
   useEffect(() => {
     if (!focusPace || tab !== "detail") return;
@@ -308,7 +318,14 @@ function ReportResult({ report, result, tab, onTabChange }) {
           hidden={tab !== "summary"}
         >
           {isReady ? (
-            <SummaryPanel overview={overview} previous={previous} feedback={feedback} onFocusPace={handleFocusPace} />
+            <SummaryPanel
+              overview={overview}
+              previous={previous}
+              feedback={feedback}
+              playing={player.playing}
+              onPlay={player.isAvailable ? (item) => player.toggle(item) : undefined}
+              onFocusPace={handleFocusPace}
+            />
           ) : (
             <div className="report-page__loading" />
           )}
@@ -352,7 +369,12 @@ function ReportResult({ report, result, tab, onTabChange }) {
                   보는 법
                 </button>
               </div>
-              <UtteranceText utterance={utterance} focusPace={focusPace} />
+              <UtteranceText
+                utterance={utterance}
+                currentChar={player.position}
+                focusPace={focusPace}
+                onSelectSegment={player.isAvailable ? handleSelectSegment : undefined}
+              />
             </>
           ) : (
             <div className="report-page__loading" />

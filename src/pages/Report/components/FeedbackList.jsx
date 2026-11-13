@@ -4,7 +4,7 @@ import chevronIcon from "@/assets/icons/chevron-right.svg";
 
 import "./FeedbackList.css";
 
-function FeedbackItem({ item, onPlay }) {
+function FeedbackItem({ item, isPlaying, onPlay }) {
   const [isOpen, setIsOpen] = useState(item.rank === 1);
   const bodyId = `feedback-body-${item.rank}`;
   const toggle = () => setIsOpen((open) => !open);
@@ -43,11 +43,12 @@ function FeedbackItem({ item, onPlay }) {
           <button
             type="button"
             className="feedback-list__play font-14-medium"
+            data-playing={isPlaying || undefined}
             onClick={() => onPlay?.(item)}
             disabled={!onPlay}
           >
             <span className="feedback-list__play-icon" aria-hidden="true" />
-            해당 부분 듣기
+            {isPlaying ? "멈추기" : "해당 부분 듣기"}
           </button>
         </div>
       </div>
@@ -55,7 +56,7 @@ function FeedbackItem({ item, onPlay }) {
   );
 }
 
-export default function FeedbackList({ items, onPlay }) {
+export default function FeedbackList({ items, playing, onPlay }) {
   if (items.length === 0) {
     return (
       <p className="feedback-list__empty font-15-medium line-height-150">
@@ -69,7 +70,7 @@ export default function FeedbackList({ items, onPlay }) {
   return (
     <ol className="feedback-list">
       {items.map((item) => (
-        <FeedbackItem key={item.rank} item={item} onPlay={onPlay} />
+        <FeedbackItem key={item.rank} item={item} isPlaying={playing === item} onPlay={onPlay} />
       ))}
     </ol>
   );

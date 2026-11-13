@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import GreenButton from "@/components/Button/GreenButton";
@@ -8,6 +9,7 @@ import { USE_MOCK } from "@/api/client";
 import { setDemoMode } from "@/api/demo";
 import { getErrorMessage } from "@/api/messages";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { NEXT_STEP_PATH } from "@/auth/AuthContext";
 import { useAuth } from "@/auth/useAuth";
 import { MENU_LEAVE_MS } from "@/constants/menu";
 
@@ -18,6 +20,7 @@ import "./MenuPanel.css";
 const DOCUMENTS = TERMS.filter((term) => term.required);
 
 export default function MenuPanel({ open, onClose, onLeave }) {
+  const navigate = useNavigate();
   const { user, logout, withdraw } = useAuth();
   const isDemo = useDemoMode();
   const [isRendered, setIsRendered] = useState(open);
@@ -141,6 +144,16 @@ export default function MenuPanel({ open, onClose, onLeave }) {
                 </button>
               </li>
             )}
+            <li>
+              <button
+                type="button"
+                className="menu-panel__row font-16-medium"
+                onClick={() => navigate(NEXT_STEP_PATH.onboarding)}
+              >
+                사용법 다시 보기
+                <img src={chevronRight} alt="" />
+              </button>
+            </li>
             {DOCUMENTS.map(({ id, label }) => (
               <li key={id}>
                 <button type="button" className="menu-panel__row font-16-medium" onClick={() => handleOpenTerm(id)}>
