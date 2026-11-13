@@ -148,6 +148,11 @@
   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
+.feedback-list__play[data-playing] .feedback-list__play-icon {
+  width: 10px;
+  clip-path: none;
+}
+
 .feedback-list__empty {
   margin: 40px 0 0;
 
