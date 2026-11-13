@@ -20,13 +20,8 @@
   padding: 50px 20px 54px;
 }
 
-.script-page__title {
-  width: 100%;
-  flex-shrink: 0;
-}
-
 .script-page__description {
-  margin: 25px 0 13px;
+  margin: 0 0 13px;
 
   font-size: 13px;
   font-weight: 400;
@@ -56,10 +51,6 @@
   .script-page__main {
     padding-top: 20px;
     padding-bottom: 20px;
-  }
-
-  .script-page__description {
-    margin-top: 16px;
   }
 
   .script-page__upload {
