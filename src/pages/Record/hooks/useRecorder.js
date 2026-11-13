@@ -15,6 +15,7 @@ export default function useRecorder() {
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
+  const limitRef = useRef(null);
   const elapsedRef = useRef(0);
   const runStartRef = useRef(null);
 
@@ -23,6 +24,7 @@ export default function useRecorder() {
 
   const stopTimer = () => {
     clearInterval(timerRef.current);
+    clearTimeout(limitRef.current);
     elapsedRef.current = elapsedMs();
     runStartRef.current = null;
   };
@@ -31,15 +33,15 @@ export default function useRecorder() {
     if (!recorderRef.current || recorderRef.current.state === "inactive") return;
 
     stopTimer();
-    setSeconds(Math.floor(elapsedRef.current / 1000));
-    setDurationMs(Math.round(elapsedRef.current));
     setReachedLimit(hitLimit);
     recorderRef.current.stop();
   };
 
   const startTimer = () => {
     clearInterval(timerRef.current);
+    clearTimeout(limitRef.current);
     runStartRef.current = performance.now();
+    limitRef.current = setTimeout(() => finish(true), Math.max(0, RECORD_MAX_MS - elapsedRef.current));
     timerRef.current = setInterval(() => {
       const elapsed = elapsedMs();
       if (elapsed >= RECORD_MAX_MS) {
@@ -80,6 +82,9 @@ export default function useRecorder() {
       };
 
       recorder.onstop = () => {
+        stopTimer();
+        setSeconds(Math.floor(elapsedRef.current / 1000));
+        setDurationMs(Math.round(elapsedRef.current));
         setAudioBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
         setStatus("done");
         releaseStream();
@@ -138,6 +143,7 @@ export default function useRecorder() {
   useEffect(() => {
     return () => {
       clearInterval(timerRef.current);
+      clearTimeout(limitRef.current);
       killRecorder();
       releaseStream();
     };
