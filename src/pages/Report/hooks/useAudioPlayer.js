@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getAudioUrl } from "@/api/reports";
 
 const REFRESH_AFTER_MS = 60_000;
-const IDLE = { range: null, timeMs: 0 };
+const IDLE = { range: null, position: -1 };
 
 export function useAudioPlayer(recordingId) {
   const audioRef = useRef(null);
@@ -66,7 +66,7 @@ export function useAudioPlayer(recordingId) {
   }, [recordingId, request, stop]);
 
   const play = useCallback(
-    (range) => {
+    (range, locate) => {
       const audio = audioRef.current;
       if (!audio) return;
 
@@ -89,11 +89,14 @@ export function useAudioPlayer(recordingId) {
           return;
         }
 
-        setPlayback({ range, timeMs: Math.max(timeMs, range.start_ms) });
+        const position = locate ? locate(Math.max(timeMs, range.start_ms)) : -1;
+        setPlayback((current) =>
+          current.range === range && current.position === position ? current : { range, position },
+        );
         frameRef.current = requestAnimationFrame(tick);
       };
 
-      setPlayback({ range, timeMs: range.start_ms });
+      setPlayback({ range, position: locate ? locate(range.start_ms) : -1 });
       frameRef.current = requestAnimationFrame(tick);
 
       audio.play().catch(() => {
@@ -104,9 +107,9 @@ export function useAudioPlayer(recordingId) {
   );
 
   const toggle = useCallback(
-    (range) => {
+    (range, locate) => {
       if (rangeRef.current === range) stop();
-      else play(range);
+      else play(range, locate);
     },
     [play, stop],
   );
@@ -114,7 +117,7 @@ export function useAudioPlayer(recordingId) {
   return {
     isAvailable: status === "ready",
     playing: playback.range,
-    timeMs: playback.timeMs,
+    position: playback.position,
     toggle,
     stop,
   };

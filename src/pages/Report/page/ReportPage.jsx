@@ -12,6 +12,7 @@ import UtteranceText from "@/pages/Report/components/UtteranceText";
 import { useAudioPlayer } from "@/pages/Report/hooks/useAudioPlayer";
 import { useReportStatus } from "@/pages/Report/hooks/useReportStatus";
 import { findPreviousAttempt, formatDuration } from "@/pages/Report/lib/attempts";
+import { findCharAt } from "@/pages/Report/lib/buildGlyphs";
 import { isDemoId } from "@/api/demo";
 import { getErrorMessage, getFailureMessage } from "@/api/messages";
 import { getPractice } from "@/api/practices";
@@ -247,7 +248,7 @@ function ReportResult({ recordingId, report, result, tab, onTabChange }) {
 
   const handleSelectSegment = (index) => {
     const segment = utterance.segments[index];
-    if (segment) player.toggle(segment);
+    if (segment) player.toggle(segment, (timeMs) => findCharAt(utterance.segments, timeMs));
   };
 
   useEffect(() => {
@@ -322,7 +323,7 @@ function ReportResult({ recordingId, report, result, tab, onTabChange }) {
               previous={previous}
               feedback={feedback}
               playing={player.playing}
-              onPlay={player.isAvailable ? player.toggle : undefined}
+              onPlay={player.isAvailable ? (item) => player.toggle(item) : undefined}
               onFocusPace={handleFocusPace}
             />
           ) : (
@@ -370,8 +371,7 @@ function ReportResult({ recordingId, report, result, tab, onTabChange }) {
               </div>
               <UtteranceText
                 utterance={utterance}
-                timeMs={player.timeMs}
-                isPlaying={player.playing !== null}
+                currentChar={player.position}
                 focusPace={focusPace}
                 onSelectSegment={player.isAvailable ? handleSelectSegment : undefined}
               />
