@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-import Header from "../../../components/Header/Header";
-import GreenButton from "../../../components/Button/GreenButton";
+import Header from "@/components/Header/Header";
+import GreenButton from "@/components/Button/GreenButton";
+import { getErrorMessage } from "@/api/messages";
+import { createPractice } from "@/api/practices";
 
-import ScriptTitle from "../components/ScriptTitle";
 import FileUpload from "../components/FileUpload";
 import ScriptEditor from "../components/ScriptEditor";
 
@@ -15,8 +16,8 @@ export default function ScriptPage({
   onBack,
   onRecord,
 }) {
-  const [title, setTitle] = useState("");
   const [script, setScript] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleFileLoad = (text) => {
     if (text.length > MAX_LENGTH) {
@@ -26,26 +27,23 @@ export default function ScriptPage({
     setScript(text.slice(0, MAX_LENGTH));
   };
 
-  const handleRecord = () => {
-    if (!title.trim()) {
-      alert("연습 제목을 입력해주세요.");
-      return;
-    }
+  // 대본으로 연습 생성(AI 제목 생성) → 녹음 화면으로 이동
+  const handleRecord = async () => {
+    if (isCreating) return;
 
     if (!script.trim()) {
       alert("발표 대본을 입력해주세요.");
       return;
     }
 
-    const practiceData = {
-      title: title.trim(),
-      script,
-    };
+    setIsCreating(true);
 
-    if (onRecord) {
-      onRecord(practiceData);
-    } else {
-      console.log("녹음 화면으로 전달할 데이터:", practiceData);
+    try {
+      const practice = await createPractice(script);
+      onRecord?.(practice);
+    } catch (error) {
+      alert(getErrorMessage(error));
+      setIsCreating(false);
     }
   };
 
@@ -57,13 +55,6 @@ export default function ScriptPage({
       />
 
       <main className="script-page__main">
-        <div className="script-page__title">
-          <ScriptTitle
-            value={title}
-            onChange={setTitle}
-          />
-        </div>
-
         <p className="script-page__description">
           3~5분 정도의 짧은 대본이 좋아요.
         </p>
@@ -82,8 +73,9 @@ export default function ScriptPage({
 
         <div className="script-page__bottom">
           <GreenButton
-            text="녹음하기"
+            text={isCreating ? "녹음 준비 중" : "녹음하기"}
             onClick={handleRecord}
+            disabled={isCreating}
           />
         </div>
       </main>
