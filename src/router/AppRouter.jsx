@@ -22,6 +22,7 @@ import TermsPage from "@/pages/Terms/page/TermsPage";
 import OnboardingPage from "@/pages/Onboarding/page/OnboardingPage";
 import ReportPage from "@/pages/Report/page/ReportPage";
 import RecordPage from "@/pages/Record/page/RecordPage";
+import TryPage from "@/pages/Try/page/TryPage";
 
 function ScriptRoute() {
   const navigate = useNavigate();
@@ -84,6 +85,8 @@ export default function AppRouter() {
                 <Route path="/practices/:practiceId/reports/:recordingId" element={<ReportPage />} />
               </Route>
             </Route>
+
+            <Route path="/try" element={<TryPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
